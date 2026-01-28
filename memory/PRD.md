@@ -1,7 +1,6 @@
 # OLAP Assistant - Product Requirements Document
 
 ## Project Overview
-**Course**: Kurs Special ne Informatike (Albanian)
 **Date**: January 28, 2026
 **Status**: MVP Complete
 
