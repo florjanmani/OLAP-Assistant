@@ -373,9 +373,9 @@ const ResultsCharts = ({ data, dimensions, chartType }) => {
 
   const chartData = data.slice(0, 10).map((item) => ({
     name: dimensions.map((d) => item[d]).join(" - "),
-    sales: item.total_sales_amount || 0,
-    quantity: item.total_quantity || 0,
-    avgSales: item.avg_sales_amount || 0,
+    sales: parseFloat(item.total_sales_amount) || 0,
+    quantity: parseInt(item.total_quantity) || 0,
+    avgSales: parseFloat(item.avg_sales_amount) || 0,
   }));
 
   const renderChart = () => {
