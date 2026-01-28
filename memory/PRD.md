@@ -36,9 +36,14 @@ Requirements:
 - ✅ Available dimensions display
 - ✅ CSV Export functionality
 - ✅ Excel Export functionality (XLSX)
+- ✅ PDF Report Export functionality
 - ✅ Query bookmarking with localStorage persistence
 - ✅ Chart/Table tab switching
 - ✅ Filter Builder UI with dimension/value selection
+- ✅ OLAP Operations Guide (explains all 5 operations)
+- ✅ Data Cube 3D Visualization
+- ✅ Query History Panel (tracks all session queries)
+- ✅ Comparison Mode (side-by-side analysis)
 
 ## Architecture
 - **Frontend**: React + Tailwind CSS + Recharts
