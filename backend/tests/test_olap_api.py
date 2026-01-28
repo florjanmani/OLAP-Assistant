@@ -274,7 +274,11 @@ class TestKPIEndpoint:
         data = response.json()
         
         # Verify KPI structure
-        assert "total_sales" in data or "kpis" in data
+        assert "total_revenue" in data
+        assert "total_units_sold" in data
+        assert "num_transactions" in data
+        assert "average_order_value" in data
+        assert "average_profit_margin" in data
 
 
 class TestSalesByMonth:
