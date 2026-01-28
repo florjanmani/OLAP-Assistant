@@ -1106,6 +1106,199 @@ export default function OLAPDashboard() {
               </DialogContent>
             </Dialog>
 
+            {/* Query History Dialog */}
+            <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" data-testid="history-btn">
+                  <History className="w-4 h-4 mr-2" />
+                  History
+                  {queryHistory.length > 0 && (
+                    <Badge className="ml-2 h-5 px-1.5" variant="secondary">
+                      {queryHistory.length}
+                    </Badge>
+                  )}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px] max-h-[80vh]">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <History className="w-5 h-5" />
+                    Query History
+                  </DialogTitle>
+                </DialogHeader>
+                <ScrollArea className="h-[400px] pr-4">
+                  {queryHistory.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Clock className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                      <p className="text-sm">No queries yet</p>
+                      <p className="text-xs mt-1">Your query history will appear here</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {queryHistory.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="border border-border rounded-md p-3 hover:bg-muted/50 transition-colors"
+                        >
+                          <button
+                            onClick={() => {
+                              setInputValue(item.query);
+                              setHistoryDialogOpen(false);
+                            }}
+                            className="w-full text-left"
+                            data-testid={`history-item-${idx}`}
+                          >
+                            <p className="text-sm font-mono">{item.query}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {new Date(item.timestamp).toLocaleString()}
+                            </p>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+                {queryHistory.length > 0 && (
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setQueryHistory([])}
+                      data-testid="clear-history-btn"
+                    >
+                      Clear History
+                    </Button>
+                  </DialogFooter>
+                )}
+              </DialogContent>
+            </Dialog>
+
+            {/* Comparison Mode Dialog */}
+            <Dialog open={compareDialogOpen} onOpenChange={setCompareDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" data-testid="compare-btn">
+                  <GitCompare className="w-4 h-4 mr-2" />
+                  Compare
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <GitCompare className="w-5 h-5" />
+                    Comparison Mode
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <p className="text-sm text-muted-foreground">
+                    Compare sales data between two regions or time periods side-by-side.
+                  </p>
+                  
+                  {/* Dimension Selection */}
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Compare by:</label>
+                    <Select
+                      value={compareItems.dimension}
+                      onValueChange={(v) => setCompareItems({ ...compareItems, dimension: v, item1: "", item2: "" })}
+                    >
+                      <SelectTrigger data-testid="compare-dimension">
+                        <SelectValue placeholder="Select dimension" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="region">Region</SelectItem>
+                        <SelectItem value="quarter">Quarter</SelectItem>
+                        <SelectItem value="product">Product</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Item Selection */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">First Item:</label>
+                      <Select
+                        value={compareItems.item1}
+                        onValueChange={(v) => setCompareItems({ ...compareItems, item1: v })}
+                      >
+                        <SelectTrigger data-testid="compare-item1">
+                          <SelectValue placeholder="Select item" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {compareItems.dimension === "region" && summary?.dimensions?.regions?.map((r) => (
+                            <SelectItem key={r} value={r}>{r}</SelectItem>
+                          ))}
+                          {compareItems.dimension === "quarter" && summary?.dimensions?.quarters?.map((q) => (
+                            <SelectItem key={q} value={q}>{q}</SelectItem>
+                          ))}
+                          {compareItems.dimension === "product" && summary?.dimensions?.products?.map((p) => (
+                            <SelectItem key={p} value={p}>{p}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Second Item:</label>
+                      <Select
+                        value={compareItems.item2}
+                        onValueChange={(v) => setCompareItems({ ...compareItems, item2: v })}
+                      >
+                        <SelectTrigger data-testid="compare-item2">
+                          <SelectValue placeholder="Select item" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {compareItems.dimension === "region" && summary?.dimensions?.regions?.map((r) => (
+                            <SelectItem key={r} value={r}>{r}</SelectItem>
+                          ))}
+                          {compareItems.dimension === "quarter" && summary?.dimensions?.quarters?.map((q) => (
+                            <SelectItem key={q} value={q}>{q}</SelectItem>
+                          ))}
+                          {compareItems.dimension === "product" && summary?.dimensions?.products?.map((p) => (
+                            <SelectItem key={p} value={p}>{p}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Comparison Results */}
+                  {compareResult && (
+                    <div className="border border-border rounded-md p-4 mt-4">
+                      <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                        <ArrowLeftRight className="w-4 h-4" />
+                        Comparison Results
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        {compareResult.data?.slice(0, 2).map((item, idx) => {
+                          const itemName = compareItems.dimension === "region" ? item.region :
+                                          compareItems.dimension === "quarter" ? item.quarter :
+                                          item.product;
+                          return (
+                            <div key={idx} className="bg-muted/50 rounded-md p-3">
+                              <p className="font-semibold text-sm">{itemName || `Item ${idx + 1}`}</p>
+                              <p className="text-2xl font-bold mt-1">
+                                ${(item.total_sales_amount || 0).toLocaleString()}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {(item.total_quantity || 0).toLocaleString()} units
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <DialogFooter>
+                  <Button
+                    onClick={runComparison}
+                    disabled={!compareItems.item1 || !compareItems.item2 || isComparing}
+                    data-testid="run-compare-btn"
+                  >
+                    {isComparing ? "Comparing..." : "Run Comparison"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
             <Button
               variant="ghost"
               size="icon"
