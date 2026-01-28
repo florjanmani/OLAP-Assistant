@@ -352,6 +352,8 @@ export default function OLAPDashboard() {
   const [darkMode, setDarkMode] = useState(false);
   const [chartType, setChartType] = useState("bar");
   const [bookmarks, setBookmarks] = useState([]);
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [filters, setFilters] = useState([]);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
