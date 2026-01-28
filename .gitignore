@@ -1,5 +1,12 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Platform-specific folders (do not include)
+.emergent/
+.emergent
+memory/
+test_reports/
+*.log
+
 # IDE and editors
 .idea/
 .vscode/
