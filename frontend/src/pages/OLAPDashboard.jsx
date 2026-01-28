@@ -546,6 +546,8 @@ export default function OLAPDashboard() {
   const [bookmarks, setBookmarks] = useState([]);
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [filters, setFilters] = useState([]);
+  const [guideDialogOpen, setGuideDialogOpen] = useState(false);
+  const [cubeDialogOpen, setCubeDialogOpen] = useState(false);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
