@@ -296,22 +296,22 @@ const ResultsCharts = ({ data, dimensions, chartType }) => {
 const MetricCard = ({ label, value, icon: Icon, trend }) => (
   <Card className="metric-card border-border">
     <CardContent className="p-5">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
+      <div className="flex justify-between">
+        <div>
           <p className="metric-label">{label}</p>
           <p className="metric-value mt-1">{value}</p>
           {trend && (
             <div className="mt-2 flex items-center text-xs text-muted-foreground">
               {trend > 0 ? (
-                <ArrowUp className="w-3 h-3 text-green-500 mr-1 flex-shrink-0" />
+                <ArrowUp className="w-3 h-3 text-green-500 mr-1" />
               ) : (
-                <ArrowDown className="w-3 h-3 text-red-500 mr-1 flex-shrink-0" />
+                <ArrowDown className="w-3 h-3 text-red-500 mr-1" />
               )}
               <span>{Math.abs(trend)}% from last period</span>
             </div>
           )}
         </div>
-        <div className="p-3 bg-primary/10 rounded-sm flex-shrink-0 self-center">
+        <div className="w-10 h-10 bg-primary/10 rounded-md flex items-center justify-center">
           <Icon className="w-5 h-5 text-primary" />
         </div>
       </div>
