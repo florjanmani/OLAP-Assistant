@@ -17,7 +17,7 @@ Users simply type:
 "Break down Q4 sales by region"
 ```
 
-The AI (Claude Sonnet 4.5) understands the request and executes the appropriate OLAP operation.
+The system understands the request and executes the appropriate OLAP operation.
 
 ---
 
@@ -81,7 +81,6 @@ The application uses **sample sales data** with **960 records**.
 | **Frontend** | React.js + Tailwind CSS | User interface |
 | **Backend** | FastAPI (Python) | API server |
 | **Database** | MongoDB | Data storage |
-| **AI/LLM** | Claude Sonnet 4.5 | Natural language understanding |
 | **Charts** | Recharts | Data visualization |
 
 ---
@@ -89,8 +88,8 @@ The application uses **sample sales data** with **960 records**.
 ## ✨ FEATURES BUILT
 
 ### Core Features:
-1. **Natural Language Queries** - Ask questions in plain English/Albanian
-2. **AI-Powered Analysis** - Claude understands and executes OLAP operations
+1. **Natural Language Queries** - Ask questions in plain English
+2. **Query Processing** - System understands and executes OLAP operations
 3. **Data Visualization** - Bar, Pie, Line, Area charts
 4. **Data Tables** - Formatted results with all metrics
 
@@ -132,7 +131,7 @@ The application uses **sample sales data** with **960 records**.
 **Step 3: Demonstrate Natural Language Query**
 - Type: "Break down Q4 sales by region"
 - Click Send
-- Explain: "The AI understood this is a SLICE operation (filtering to Q4) and grouped by region"
+- Explain: "The system understood this is a SLICE operation (filtering to Q4) and grouped by region"
 
 **Step 4: Show Different OLAP Operations**
 
@@ -179,7 +178,7 @@ The application uses **sample sales data** with **960 records**.
 
 2. **Why Natural Language?**
    - Business users don't know SQL
-   - AI makes data analysis accessible to everyone
+   - Natural language makes data analysis accessible to everyone
    - Faster insights without technical knowledge
 
 3. **The Data Cube Concept**
@@ -244,7 +243,7 @@ The application is live and ready to use. No login required.
 - [ ] Show the Data Cube visualization
 - [ ] Demonstrate the Comparison Mode
 - [ ] Show Query History with expandable details
-- [ ] Explain how AI understands natural language
+- [ ] Explain how the system understands natural language
 
 ---
 
