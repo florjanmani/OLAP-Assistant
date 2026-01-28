@@ -5,7 +5,15 @@
 .emergent
 memory/
 test_reports/
+tests/
 *.log
+
+# Test files
+backend_test.py
+backend_test_report.json
+design_guidelines.json
+test_result.md
+.gitconfig
 
 # IDE and editors
 .idea/
