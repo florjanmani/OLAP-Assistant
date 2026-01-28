@@ -451,7 +451,15 @@ class DuckDBManager:
                     where_clauses.append("p.category_name = ?")
                     params.append(value)
         
-        # Build the full query
+        # Build the full query - handle case when no dimensions specified
+        if not select_dims:
+            # Default to region if no dimensions
+            select_dims = ["r.region_name as region"]
+            group_dims = ["r.region_name"]
+        
+        # Determine ORDER BY column - use first aggregate or count
+        order_col = "total_sales_amount" if "SUM(f.sales_amount) as total_sales_amount" in measure_aggs else "count"
+        
         query = f"""
             SELECT {', '.join(select_dims + measure_aggs)}
             FROM fact_sales f
@@ -460,7 +468,7 @@ class DuckDBManager:
             JOIN dim_product p ON f.product_key = p.product_key
             {'WHERE ' + ' AND '.join(where_clauses) if where_clauses else ''}
             GROUP BY {', '.join(group_dims)}
-            ORDER BY total_sales_amount DESC
+            ORDER BY {order_col} DESC
             LIMIT 100
         """
         
