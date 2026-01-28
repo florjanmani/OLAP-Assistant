@@ -81,6 +81,12 @@ class OLAPQuery(BaseModel):
     filters: Optional[Dict[str, Any]] = None
 
 
+class CompareRequest(BaseModel):
+    dimension: str  # region, product, quarter, etc.
+    item1: str
+    item2: str
+
+
 # OLAP System Prompt
 OLAP_SYSTEM_PROMPT = """You are an OLAP (Online Analytical Processing) Assistant that helps business users analyze sales data through natural language.
 
