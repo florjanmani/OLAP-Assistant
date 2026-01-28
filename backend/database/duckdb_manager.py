@@ -242,6 +242,9 @@ class DuckDBManager:
                     # Select a random product
                     product_key, product_name, category, base_price = random.choice(product_keys)
                     
+                    # Convert base_price to float if it's Decimal
+                    base_price_float = float(base_price) if base_price else 100.0
+                    
                     # Calculate sales with realistic variations
                     quantity = random.randint(1, 50)
                     
@@ -264,7 +267,7 @@ class DuckDBManager:
                     elif category == "Electronics":
                         price_multiplier *= 1.5
                     
-                    unit_price = round(base_price * price_multiplier * random.uniform(0.8, 1.2), 2)
+                    unit_price = round(base_price_float * price_multiplier * random.uniform(0.8, 1.2), 2)
                     sales_amount = round(unit_price * quantity, 2)
                     discount = round(random.uniform(0, 0.20), 2)
                     profit_margin = round(random.uniform(0.15, 0.45), 2)
