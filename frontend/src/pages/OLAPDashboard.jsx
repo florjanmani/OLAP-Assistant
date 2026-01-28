@@ -71,6 +71,11 @@ import {
   Maximize2,
   Minimize2,
   Grid3X3,
+  History,
+  GitCompare,
+  FileText,
+  Clock,
+  ArrowLeftRight,
 } from "lucide-react";
 import {
   BarChart,
