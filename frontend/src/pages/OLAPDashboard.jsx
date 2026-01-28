@@ -523,25 +523,85 @@ const MetricCard = ({ label, value, icon: Icon, trend }) => (
   </Card>
 );
 
-// OLAP Operation Badge
+// OLAP Operation Badge with clickable popover
 const OperationBadge = ({ operation }) => {
   const operationConfig = {
-    drill_down: { icon: ArrowDown, color: "bg-blue-500/10 text-blue-600" },
-    roll_up: { icon: ArrowUp, color: "bg-green-500/10 text-green-600" },
-    slice: { icon: Filter, color: "bg-purple-500/10 text-purple-600" },
-    dice: { icon: Layers, color: "bg-orange-500/10 text-orange-600" },
-    pivot: { icon: RotateCcw, color: "bg-pink-500/10 text-pink-600" },
-    aggregate: { icon: BarChart3, color: "bg-cyan-500/10 text-cyan-600" },
+    drill_down: { 
+      icon: ArrowDown, 
+      color: "bg-blue-500/10 text-blue-600 hover:bg-blue-500/20",
+      name: "Drill-Down",
+      description: "Navigate from summary to detailed data by moving down the hierarchy.",
+      example: "Year → Quarter → Month → Day"
+    },
+    roll_up: { 
+      icon: ArrowUp, 
+      color: "bg-green-500/10 text-green-600 hover:bg-green-500/20",
+      name: "Roll-Up",
+      description: "Aggregate data by moving up the hierarchy from detailed to summary.",
+      example: "Product → Category → All Products"
+    },
+    slice: { 
+      icon: Filter, 
+      color: "bg-purple-500/10 text-purple-600 hover:bg-purple-500/20",
+      name: "Slice",
+      description: "Select a single dimension value to create a sub-cube of data.",
+      example: "Filter by Quarter = 'Q4'"
+    },
+    dice: { 
+      icon: Grid3X3, 
+      color: "bg-orange-500/10 text-orange-600 hover:bg-orange-500/20",
+      name: "Dice",
+      description: "Select multiple dimension values to create a sub-cube.",
+      example: "Region IN ('North', 'South') AND Quarter = 'Q4'"
+    },
+    pivot: { 
+      icon: RotateCcw, 
+      color: "bg-pink-500/10 text-pink-600 hover:bg-pink-500/20",
+      name: "Pivot",
+      description: "Rotate the data cube to view data from different perspectives.",
+      example: "Swap rows and columns in the view"
+    },
+    aggregate: { 
+      icon: BarChart3, 
+      color: "bg-cyan-500/10 text-cyan-600 hover:bg-cyan-500/20",
+      name: "Aggregate",
+      description: "Summarize data by grouping and calculating totals, averages, etc.",
+      example: "SUM(sales) GROUP BY region"
+    },
   };
 
   const config = operationConfig[operation] || operationConfig.aggregate;
   const Icon = config.icon;
 
   return (
-    <Badge className={`${config.color} font-mono text-xs`} data-testid="operation-badge">
-      <Icon className="w-3 h-3 mr-1" />
-      {operation?.replace(/_/g, " ").toUpperCase()}
-    </Badge>
+    <Popover>
+      <PopoverTrigger asChild>
+        <button 
+          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors cursor-pointer ${config.color}`}
+          data-testid="operation-badge"
+        >
+          <Icon className="w-3 h-3 mr-1" />
+          {operation?.replace(/_/g, " ").toUpperCase()}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80" align="end">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className={`p-2 rounded-md ${config.color}`}>
+              <Icon className="w-4 h-4" />
+            </div>
+            <h4 className="font-semibold">{config.name}</h4>
+          </div>
+          <p className="text-sm text-muted-foreground">{config.description}</p>
+          <div className="pt-2 border-t border-border">
+            <p className="text-xs text-muted-foreground">Example:</p>
+            <code className="text-xs bg-muted px-2 py-1 rounded mt-1 block font-mono">
+              {config.example}
+            </code>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
 
