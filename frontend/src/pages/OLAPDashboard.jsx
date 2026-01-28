@@ -482,6 +482,26 @@ export default function OLAPDashboard() {
     toast.success("Data exported to CSV");
   };
 
+  // Export to Excel
+  const exportToExcel = () => {
+    if (!currentResult?.data || currentResult.data.length === 0) {
+      toast.error("No data to export");
+      return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(currentResult.data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "OLAP Analysis");
+    
+    // Auto-size columns
+    const headers = Object.keys(currentResult.data[0]);
+    const colWidths = headers.map(h => ({ wch: Math.max(h.length, 15) }));
+    worksheet['!cols'] = colWidths;
+    
+    XLSX.writeFile(workbook, `olap_analysis_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    toast.success("Data exported to Excel");
+  };
+
   // Bookmark current query
   const toggleBookmark = () => {
     const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
