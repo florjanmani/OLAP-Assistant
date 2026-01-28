@@ -29,11 +29,14 @@ from planner.orchestrator import orchestrator
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# Create the main app without a prefix
+# Create the main app with API docs under /api prefix
 app = FastAPI(
     title="OLAP Assistant API",
     description="Natural Language OLAP Analysis System with Multi-Agent Architecture",
-    version="2.0.0"
+    version="2.0.0",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json"
 )
 
 # Create a router with the /api prefix
