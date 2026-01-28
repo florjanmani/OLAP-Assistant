@@ -766,6 +766,7 @@ export default function OLAPDashboard() {
 
     setIsComparing(true);
     const query = `Compare sales between ${compareItems.item1} and ${compareItems.item2}`;
+    const historyId = Date.now().toString();
     
     try {
       const response = await axios.post(`${API}/chat`, {
@@ -777,9 +778,16 @@ export default function OLAPDashboard() {
         setCompareResult(response.data.analysis_result);
       }
       
-      // Add to query history
+      // Add to query history with full response
       setQueryHistory((prev) => {
-        const newHistory = [{ query, timestamp: new Date().toISOString() }, ...prev];
+        const newHistory = [{ 
+          id: historyId,
+          query, 
+          timestamp: new Date().toISOString(),
+          response: response.data.response,
+          result: response.data.analysis_result,
+          expanded: false
+        }, ...prev];
         return newHistory.slice(0, 20);
       });
       
@@ -787,6 +795,19 @@ export default function OLAPDashboard() {
     } catch (error) {
       console.error("Error running comparison:", error);
       toast.error("Failed to run comparison");
+      
+      // Add failed query to history
+      setQueryHistory((prev) => {
+        const newHistory = [{ 
+          id: historyId,
+          query, 
+          timestamp: new Date().toISOString(),
+          response: "Comparison failed",
+          result: null,
+          expanded: false
+        }, ...prev];
+        return newHistory.slice(0, 20);
+      });
     } finally {
       setIsComparing(false);
     }
