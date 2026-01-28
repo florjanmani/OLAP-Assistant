@@ -381,38 +381,22 @@ const ResultsCharts = ({ data, dimensions, chartType }) => {
   const renderChart = () => {
     switch (chartType) {
       case "pie":
-        // Custom label renderer for pie chart
-        const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
-          const RADIAN = Math.PI / 180;
-          const radius = outerRadius * 1.35;
-          const x = cx + radius * Math.cos(-midAngle * RADIAN);
-          const y = cy + radius * Math.sin(-midAngle * RADIAN);
-          
-          return (
-            <text
-              x={x}
-              y={y}
-              fill="hsl(var(--foreground))"
-              textAnchor={x > cx ? "start" : "end"}
-              dominantBaseline="central"
-              fontSize={12}
-              fontWeight={500}
-            >
-              {`${name} (${(percent * 100).toFixed(0)}%)`}
-            </text>
-          );
-        };
-        
         return (
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
+            <PieChart margin={{ top: 20, right: 80, bottom: 20, left: 80 }}>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                labelLine={true}
-                label={renderCustomLabel}
-                outerRadius={90}
+                labelLine={{ stroke: "hsl(var(--muted-foreground))", strokeWidth: 1 }}
+                label={({ name, percent, cx, cy, midAngle, outerRadius }) => {
+                  const RADIAN = Math.PI / 180;
+                  const radius = outerRadius + 25;
+                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                  return `${name} (${(percent * 100).toFixed(0)}%)`;
+                }}
+                outerRadius={80}
                 fill="#8884d8"
                 dataKey="sales"
               >
