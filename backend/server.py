@@ -167,24 +167,6 @@ async def generate_sample_data():
     await db.sales_data.insert_many(sales_data)
     logger.info(f"Generated {len(sales_data)} sample sales records")
     return len(sales_data)
-                    quantity = random.randint(10, 200)
-                    
-                    sales_data.append({
-                        "id": str(uuid.uuid4()),
-                        "region": region,
-                        "product": product,
-                        "category": PRODUCT_CATEGORY_MAP[product],
-                        "sales_amount": round(base_sales, 2),
-                        "quantity": quantity,
-                        "date": f"{year}-{str(month_idx + 1).zfill(2)}-15",
-                        "quarter": quarter,
-                        "month": month,
-                        "year": year
-                    })
-    
-    await db.sales_data.insert_many(sales_data)
-    logger.info(f"Generated {len(sales_data)} sample sales records")
-    return len(sales_data)
 
 async def perform_olap_analysis(query: Dict[str, Any]) -> Dict[str, Any]:
     """Execute OLAP operations on the sales data"""
