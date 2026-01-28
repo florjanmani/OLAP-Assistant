@@ -765,27 +765,43 @@ export default function OLAPDashboard() {
     }
 
     setIsComparing(true);
-    const query = `Compare sales between ${compareItems.item1} and ${compareItems.item2}`;
     const historyId = Date.now().toString();
     
     try {
-      const response = await axios.post(`${API}/chat`, {
-        message: query,
-        session_id: sessionId,
+      const response = await axios.post(`${API}/compare`, {
+        dimension: compareItems.dimension,
+        item1: compareItems.item1,
+        item2: compareItems.item2,
       });
 
-      if (response.data.analysis_result) {
-        setCompareResult(response.data.analysis_result);
+      if (response.data) {
+        // Transform compare response to match expected format
+        const chartData = response.data.chart_data || [];
+        const transformedResult = {
+          operation: "comparison",
+          dimensions: [compareItems.dimension],
+          measures: ["sales_amount", "quantity"],
+          filters: {},
+          data: chartData.map(item => ({
+            [compareItems.dimension]: item.name,
+            total_sales_amount: item.sales,
+            total_quantity: item.quantity
+          })),
+          row_count: chartData.length,
+          comparison: response.data.comparison
+        };
+        setCompareResult(transformedResult);
       }
       
       // Add to query history with full response
+      const query = `Compare ${compareItems.item1} vs ${compareItems.item2} by ${compareItems.dimension}`;
       setQueryHistory((prev) => {
         const newHistory = [{ 
           id: historyId,
           query, 
           timestamp: new Date().toISOString(),
-          response: response.data.response,
-          result: response.data.analysis_result,
+          response: `Comparison: ${compareItems.item1} vs ${compareItems.item2}`,
+          result: response.data,
           expanded: false
         }, ...prev];
         return newHistory.slice(0, 20);
@@ -797,6 +813,7 @@ export default function OLAPDashboard() {
       toast.error("Failed to run comparison");
       
       // Add failed query to history
+      const query = `Compare ${compareItems.item1} vs ${compareItems.item2} by ${compareItems.dimension}`;
       setQueryHistory((prev) => {
         const newHistory = [{ 
           id: historyId,
