@@ -432,24 +432,52 @@ class DuckDBManager:
         params = []
         if filters:
             for key, value in filters.items():
-                if key.lower() == "region":
-                    where_clauses.append("r.region_name = ?")
-                    params.append(value)
-                elif key.lower() == "quarter":
-                    where_clauses.append("t.quarter = ?")
-                    params.append(value)
-                elif key.lower() == "year":
-                    where_clauses.append("t.year = ?")
-                    params.append(int(value) if isinstance(value, str) else value)
-                elif key.lower() == "month":
-                    where_clauses.append("t.month_name = ?")
-                    params.append(value)
-                elif key.lower() == "product":
-                    where_clauses.append("p.product_name = ?")
-                    params.append(value)
-                elif key.lower() == "category":
-                    where_clauses.append("p.category_name = ?")
-                    params.append(value)
+                # Handle array values (for dice operations)
+                if isinstance(value, list):
+                    if key.lower() == "region":
+                        placeholders = ', '.join(['?' for _ in value])
+                        where_clauses.append(f"r.region_name IN ({placeholders})")
+                        params.extend(value)
+                    elif key.lower() == "quarter":
+                        placeholders = ', '.join(['?' for _ in value])
+                        where_clauses.append(f"t.quarter IN ({placeholders})")
+                        params.extend(value)
+                    elif key.lower() == "year":
+                        placeholders = ', '.join(['?' for _ in value])
+                        where_clauses.append(f"t.year IN ({placeholders})")
+                        params.extend([int(v) if isinstance(v, str) else v for v in value])
+                    elif key.lower() == "month":
+                        placeholders = ', '.join(['?' for _ in value])
+                        where_clauses.append(f"t.month_name IN ({placeholders})")
+                        params.extend(value)
+                    elif key.lower() == "product":
+                        placeholders = ', '.join(['?' for _ in value])
+                        where_clauses.append(f"p.product_name IN ({placeholders})")
+                        params.extend(value)
+                    elif key.lower() == "category":
+                        placeholders = ', '.join(['?' for _ in value])
+                        where_clauses.append(f"p.category_name IN ({placeholders})")
+                        params.extend(value)
+                else:
+                    # Handle single values
+                    if key.lower() == "region":
+                        where_clauses.append("r.region_name = ?")
+                        params.append(value)
+                    elif key.lower() == "quarter":
+                        where_clauses.append("t.quarter = ?")
+                        params.append(value)
+                    elif key.lower() == "year":
+                        where_clauses.append("t.year = ?")
+                        params.append(int(value) if isinstance(value, str) else value)
+                    elif key.lower() == "month":
+                        where_clauses.append("t.month_name = ?")
+                        params.append(value)
+                    elif key.lower() == "product":
+                        where_clauses.append("p.product_name = ?")
+                        params.append(value)
+                    elif key.lower() == "category":
+                        where_clauses.append("p.category_name = ?")
+                        params.append(value)
         
         # Build the full query - handle case when no dimensions specified
         if not select_dims:
