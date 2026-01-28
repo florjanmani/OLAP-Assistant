@@ -112,7 +112,7 @@ pip install -r requirements.txt
 3. **Configure Environment**
 ```bash
 # Create .env file in backend/
-EMERGENT_LLM_KEY=<your-llm-api-key>  # For natural language processing
+LLM_API_KEY=<your-llm-api-key>  # For natural language processing
 CORS_ORIGINS="*"
 ```
 
