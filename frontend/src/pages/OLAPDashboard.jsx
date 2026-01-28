@@ -920,6 +920,48 @@ export default function OLAPDashboard() {
                 </Button>
               </>
             )}
+
+            {/* OLAP Guide Dialog */}
+            <Dialog open={guideDialogOpen} onOpenChange={setGuideDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" data-testid="olap-guide-btn">
+                  <HelpCircle className="w-4 h-4 mr-2" />
+                  OLAP Guide
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[550px] max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <HelpCircle className="w-5 h-5" />
+                    OLAP Operations Guide
+                  </DialogTitle>
+                </DialogHeader>
+                <OLAPGuide onSelectQuery={(query) => {
+                  setInputValue(query);
+                  setGuideDialogOpen(false);
+                }} />
+              </DialogContent>
+            </Dialog>
+
+            {/* Data Cube Dialog */}
+            <Dialog open={cubeDialogOpen} onOpenChange={setCubeDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" data-testid="data-cube-btn">
+                  <Box className="w-4 h-4 mr-2" />
+                  Data Cube
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Box className="w-5 h-5" />
+                    Data Cube Visualization
+                  </DialogTitle>
+                </DialogHeader>
+                <DataCubeVisualization />
+              </DialogContent>
+            </Dialog>
+
             <Button
               variant="ghost"
               size="icon"
