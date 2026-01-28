@@ -6,6 +6,7 @@
 memory/
 test_reports/
 tests/
+data/
 *.log
 
 # Test files
