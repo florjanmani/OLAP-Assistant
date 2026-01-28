@@ -313,8 +313,11 @@ class DuckDBManager:
                 region_key = random.choice(region_keys)[0]
                 product_key, product_name, category, base_price = random.choice(product_keys)
                 
+                # Convert base_price to float if it's Decimal
+                base_price_float = float(base_price) if base_price else 100.0
+                
                 quantity = random.randint(1, 50)
-                unit_price = round(base_price * random.uniform(1.0, 2.5), 2)
+                unit_price = round(base_price_float * random.uniform(1.0, 2.5), 2)
                 sales_amount = round(unit_price * quantity, 2)
                 
                 batch_data.append((
