@@ -13,7 +13,6 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone
-import anthropic
 import json
 
 # Import database manager
