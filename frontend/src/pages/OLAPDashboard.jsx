@@ -93,6 +93,196 @@ const API = `${BACKEND_URL}/api`;
 
 const CHART_COLORS = ["#0047AB", "#FF3B30", "#00C7BE", "#AF52DE", "#FF9500", "#34C759", "#FF2D55", "#5856D6"];
 
+// OLAP Operations data
+const OLAP_OPERATIONS = [
+  {
+    name: "Drill-Down",
+    icon: ArrowDown,
+    color: "text-blue-600 bg-blue-500/10",
+    description: "Navigate from summary to detailed data by moving down the hierarchy.",
+    example: "Year → Quarter → Month → Day",
+    query: "Drill into Q4 sales by month"
+  },
+  {
+    name: "Roll-Up",
+    icon: ArrowUp,
+    color: "text-green-600 bg-green-500/10",
+    description: "Aggregate data by moving up the hierarchy from detailed to summary.",
+    example: "Product → Category → All Products",
+    query: "Show total sales by category"
+  },
+  {
+    name: "Slice",
+    icon: Filter,
+    color: "text-purple-600 bg-purple-500/10",
+    description: "Select a single dimension value to create a sub-cube of data.",
+    example: "Filter by Region = 'North'",
+    query: "Show Q4 sales only"
+  },
+  {
+    name: "Dice",
+    icon: Grid3X3,
+    color: "text-orange-600 bg-orange-500/10",
+    description: "Select multiple dimension values to create a sub-cube.",
+    example: "Region IN ('North', 'South') AND Quarter = 'Q4'",
+    query: "Compare North and South in Q4"
+  },
+  {
+    name: "Pivot",
+    icon: RotateCcw,
+    color: "text-pink-600 bg-pink-500/10",
+    description: "Rotate the data cube to view data from different perspectives.",
+    example: "Swap rows and columns in the view",
+    query: "Show products by region instead of region by products"
+  }
+];
+
+// OLAP Operations Guide Component
+const OLAPGuide = ({ onSelectQuery }) => (
+  <div className="space-y-4">
+    <p className="text-sm text-muted-foreground">
+      OLAP (Online Analytical Processing) operations allow you to explore multidimensional data:
+    </p>
+    <div className="space-y-3">
+      {OLAP_OPERATIONS.map((op) => (
+        <div key={op.name} className="border border-border rounded-md p-4">
+          <div className="flex items-start gap-3">
+            <div className={`p-2 rounded-md ${op.color}`}>
+              <op.icon className="w-4 h-4" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="font-semibold text-sm">{op.name}</h4>
+              <p className="text-xs text-muted-foreground mt-1">{op.description}</p>
+              <div className="mt-2 flex items-center gap-2 text-xs">
+                <span className="text-muted-foreground">Example:</span>
+                <code className="bg-muted px-1.5 py-0.5 rounded font-mono">{op.example}</code>
+              </div>
+              <button
+                onClick={() => onSelectQuery(op.query)}
+                className="mt-2 text-xs text-primary hover:underline flex items-center gap-1"
+                data-testid={`guide-query-${op.name.toLowerCase()}`}
+              >
+                Try: &quot;{op.query}&quot;
+                <ArrowRight className="w-3 h-3" />
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+// Data Cube Visualization Component
+const DataCubeVisualization = () => (
+  <div className="space-y-4">
+    <p className="text-sm text-muted-foreground">
+      A data cube represents multidimensional data with dimensions and measures:
+    </p>
+    
+    {/* 3D Cube Visualization */}
+    <div className="relative h-64 flex items-center justify-center">
+      <svg viewBox="0 0 300 250" className="w-full h-full max-w-[300px]">
+        {/* Back face */}
+        <polygon 
+          points="80,40 220,40 220,140 80,140" 
+          fill="hsl(var(--primary) / 0.1)" 
+          stroke="hsl(var(--primary))" 
+          strokeWidth="2"
+        />
+        {/* Left face */}
+        <polygon 
+          points="40,80 80,40 80,140 40,180" 
+          fill="hsl(var(--primary) / 0.15)" 
+          stroke="hsl(var(--primary))" 
+          strokeWidth="2"
+        />
+        {/* Bottom face */}
+        <polygon 
+          points="40,180 80,140 220,140 180,180" 
+          fill="hsl(var(--primary) / 0.2)" 
+          stroke="hsl(var(--primary))" 
+          strokeWidth="2"
+        />
+        {/* Front face */}
+        <polygon 
+          points="40,80 180,80 180,180 40,180" 
+          fill="hsl(var(--primary) / 0.05)" 
+          stroke="hsl(var(--primary))" 
+          strokeWidth="2"
+        />
+        {/* Right face */}
+        <polygon 
+          points="180,80 220,40 220,140 180,180" 
+          fill="hsl(var(--primary) / 0.12)" 
+          stroke="hsl(var(--primary))" 
+          strokeWidth="2"
+        />
+        {/* Top face */}
+        <polygon 
+          points="40,80 80,40 220,40 180,80" 
+          fill="hsl(var(--primary) / 0.08)" 
+          stroke="hsl(var(--primary))" 
+          strokeWidth="2"
+        />
+        
+        {/* Dimension labels */}
+        <text x="110" y="25" className="text-xs font-semibold fill-primary">TIME</text>
+        <text x="235" y="95" className="text-xs font-semibold fill-primary">REGION</text>
+        <text x="5" y="135" className="text-xs font-semibold fill-primary">PRODUCT</text>
+        
+        {/* Center label */}
+        <text x="95" y="135" className="text-sm font-bold fill-foreground">SALES</text>
+        <text x="85" y="150" className="text-xs fill-muted-foreground">Measures</text>
+        
+        {/* Grid lines on faces */}
+        <line x1="120" y1="40" x2="120" y2="140" stroke="hsl(var(--border))" strokeWidth="1" strokeDasharray="3,3" />
+        <line x1="160" y1="40" x2="160" y2="140" stroke="hsl(var(--border))" strokeWidth="1" strokeDasharray="3,3" />
+        <line x1="80" y1="70" x2="220" y2="70" stroke="hsl(var(--border))" strokeWidth="1" strokeDasharray="3,3" />
+        <line x1="80" y1="100" x2="220" y2="100" stroke="hsl(var(--border))" strokeWidth="1" strokeDasharray="3,3" />
+      </svg>
+    </div>
+
+    {/* Dimensions Info */}
+    <div className="grid grid-cols-3 gap-3">
+      <div className="border border-border rounded-md p-3 text-center">
+        <div className="w-8 h-8 bg-blue-500/10 rounded-md flex items-center justify-center mx-auto mb-2">
+          <Database className="w-4 h-4 text-blue-600" />
+        </div>
+        <h4 className="font-semibold text-xs">TIME</h4>
+        <p className="text-xs text-muted-foreground mt-1">Year, Quarter, Month</p>
+      </div>
+      <div className="border border-border rounded-md p-3 text-center">
+        <div className="w-8 h-8 bg-green-500/10 rounded-md flex items-center justify-center mx-auto mb-2">
+          <Layers className="w-4 h-4 text-green-600" />
+        </div>
+        <h4 className="font-semibold text-xs">REGION</h4>
+        <p className="text-xs text-muted-foreground mt-1">North, South, East, West</p>
+      </div>
+      <div className="border border-border rounded-md p-3 text-center">
+        <div className="w-8 h-8 bg-purple-500/10 rounded-md flex items-center justify-center mx-auto mb-2">
+          <Box className="w-4 h-4 text-purple-600" />
+        </div>
+        <h4 className="font-semibold text-xs">PRODUCT</h4>
+        <p className="text-xs text-muted-foreground mt-1">Laptop, Phone, etc.</p>
+      </div>
+    </div>
+
+    {/* Measures */}
+    <div className="border border-border rounded-md p-3">
+      <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+        <TrendingUp className="w-4 h-4 text-primary" />
+        Measures (Facts)
+      </h4>
+      <div className="flex flex-wrap gap-2">
+        <Badge variant="secondary">Sales Amount ($)</Badge>
+        <Badge variant="secondary">Quantity Sold</Badge>
+        <Badge variant="secondary">Average Sale</Badge>
+      </div>
+    </div>
+  </div>
+);
+
 // Chat Message Component
 const ChatMessage = ({ message }) => {
   const isUser = message.role === "user";
