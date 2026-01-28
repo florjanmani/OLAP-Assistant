@@ -1557,12 +1557,32 @@ export default function OLAPDashboard() {
                   </div>
                 </div>
                 {currentResult && (
-                  <div className="flex flex-wrap gap-2 mt-2">
+                  <div className="flex flex-wrap gap-2 mt-2 items-center">
                     <span className="text-xs text-muted-foreground">Dimensions:</span>
                     {currentResult.dimensions?.map((dim) => (
-                      <Badge key={dim} variant="secondary" className="text-xs font-mono">
-                        {dim}
-                      </Badge>
+                      <Popover key={dim}>
+                        <PopoverTrigger asChild>
+                          <button className="inline-flex items-center rounded-full bg-secondary text-secondary-foreground px-2.5 py-0.5 text-xs font-mono cursor-pointer hover:bg-secondary/80 transition-colors">
+                            {dim}
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64" align="start">
+                          <div className="space-y-2">
+                            <h4 className="font-semibold text-sm capitalize">{dim} Dimension</h4>
+                            <p className="text-xs text-muted-foreground">
+                              {dim === "region" && "Geographic area where sales occurred (North, South, East, West, Central)."}
+                              {dim === "product" && "Specific product sold (Laptop, Phone, Tablet, etc.)."}
+                              {dim === "category" && "Product category grouping (Electronics, Computing, Accessories)."}
+                              {dim === "quarter" && "Fiscal quarter of the year (Q1, Q2, Q3, Q4)."}
+                              {dim === "month" && "Calendar month when the sale occurred."}
+                              {dim === "year" && "Calendar year of the transaction (2023, 2024)."}
+                            </p>
+                            <div className="pt-2 border-t border-border">
+                              <p className="text-xs text-muted-foreground">Data is grouped by this dimension in the analysis.</p>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                     ))}
                     {currentResult.filters &&
                       Object.keys(currentResult.filters).length > 0 && (
@@ -1570,13 +1590,26 @@ export default function OLAPDashboard() {
                           <Separator orientation="vertical" className="h-4" />
                           <span className="text-xs text-muted-foreground">Filters:</span>
                           {Object.entries(currentResult.filters).map(([key, value]) => (
-                            <Badge
-                              key={key}
-                              variant="outline"
-                              className="text-xs font-mono"
-                            >
-                              {key}: {String(value)}
-                            </Badge>
+                            <Popover key={key}>
+                              <PopoverTrigger asChild>
+                                <button className="inline-flex items-center rounded-full border border-input bg-background px-2.5 py-0.5 text-xs font-mono cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors">
+                                  {key}: {String(value)}
+                                </button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-64" align="start">
+                                <div className="space-y-2">
+                                  <h4 className="font-semibold text-sm">Filter Applied</h4>
+                                  <div className="bg-muted rounded-md p-2">
+                                    <p className="text-xs font-mono">
+                                      <span className="text-muted-foreground capitalize">{key}</span> = <span className="text-primary font-semibold">{String(value)}</span>
+                                    </p>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground">
+                                    Only data matching this filter condition is included in the analysis results.
+                                  </p>
+                                </div>
+                              </PopoverContent>
+                            </Popover>
                           ))}
                         </>
                       )}
