@@ -12,10 +12,10 @@ from enum import Enum
 import re
 
 # Import agents
-from backend.agents.dimension_navigator import dimension_navigator
-from backend.agents.cube_operations import cube_operations
-from backend.agents.kpi_calculator import kpi_calculator
-from backend.agents.report_generator import report_generator
+from agents.dimension_navigator import dimension_navigator
+from agents.cube_operations import cube_operations
+from agents.kpi_calculator import kpi_calculator
+from agents.report_generator import report_generator
 
 
 class QueryIntent(Enum):
