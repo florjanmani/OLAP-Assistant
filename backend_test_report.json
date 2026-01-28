@@ -1,0 +1,51 @@
+{
+  "summary": "Backend API testing completed: 7/7 tests passed",
+  "total_tests": 7,
+  "passed_tests": 7,
+  "failed_tests": 0,
+  "test_results": [
+    {
+      "test": "Root API Endpoint",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-01-28T09:09:14.439872"
+    },
+    {
+      "test": "Data Initialization",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-01-28T09:09:15.474385"
+    },
+    {
+      "test": "Data Summary",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-01-28T09:09:16.521144"
+    },
+    {
+      "test": "Chat Endpoint - Natural Language Query",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-01-28T09:09:21.469819"
+    },
+    {
+      "test": "Chat Endpoint - Simple Query",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-01-28T09:09:27.116126"
+    },
+    {
+      "test": "Direct OLAP Query",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-01-28T09:09:28.169232"
+    },
+    {
+      "test": "Sales by Region",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-01-28T09:09:29.202797"
+    }
+  ],
+  "timestamp": "2026-01-28T09:09:30.203337"
+}
