@@ -97,27 +97,76 @@ def get_quarter(month_idx: int) -> str:
         return "Q4"
 
 async def generate_sample_data():
-    """Generate sample sales data for OLAP analysis"""
+    """Generate sample sales data for OLAP analysis - 10,000+ transactions"""
     existing = await db.sales_data.count_documents({})
-    if existing > 0:
+    if existing >= 10000:
         logger.info(f"Sample data already exists: {existing} records")
         return existing
     
+    # Clear existing data to regenerate with 10,000+ records
+    if existing > 0 and existing < 10000:
+        await db.sales_data.delete_many({})
+        logger.info("Cleared existing data to regenerate 10,000+ records")
+    
     sales_data = []
-    for year in [2023, 2024]:
+    transaction_id = 1
+    
+    # Generate data for 3 years to reach 10,000+ transactions
+    for year in [2022, 2023, 2024]:
         for month_idx, month in enumerate(MONTHS):
             quarter = get_quarter(month_idx)
             for region in REGIONS:
                 for product in PRODUCTS:
-                    # Generate realistic sales with some variation
-                    base_sales = random.uniform(5000, 50000)
-                    # Q4 generally has higher sales
-                    if quarter == "Q4":
-                        base_sales *= 1.3
-                    # Some regions perform better
-                    if region in ["North", "East"]:
-                        base_sales *= 1.15
+                    # Generate multiple transactions per product/region/month
+                    num_transactions = random.randint(2, 5)  # 2-5 transactions each
                     
+                    for _ in range(num_transactions):
+                        # Generate realistic sales with variation
+                        base_sales = random.uniform(500, 15000)
+                        
+                        # Q4 generally has higher sales (holiday season)
+                        if quarter == "Q4":
+                            base_sales *= 1.3
+                        
+                        # Some regions perform better
+                        if region in ["North", "East"]:
+                            base_sales *= 1.15
+                        elif region == "Central":
+                            base_sales *= 1.05
+                        
+                        # Product-based pricing
+                        if product in ["Laptop", "Desktop"]:
+                            base_sales *= 2.5
+                        elif product in ["Phone", "Tablet"]:
+                            base_sales *= 1.8
+                        elif product == "Monitor":
+                            base_sales *= 1.4
+                        
+                        # Random day in month
+                        day = random.randint(1, 28)
+                        quantity = random.randint(1, 50)
+                        
+                        sales_data.append({
+                            "id": str(uuid.uuid4()),
+                            "transaction_id": f"TXN-{transaction_id:06d}",
+                            "region": region,
+                            "product": product,
+                            "category": PRODUCT_CATEGORY_MAP[product],
+                            "sales_amount": round(base_sales, 2),
+                            "quantity": quantity,
+                            "unit_price": round(base_sales / quantity, 2),
+                            "date": f"{year}-{str(month_idx + 1).zfill(2)}-{str(day).zfill(2)}",
+                            "quarter": quarter,
+                            "month": month,
+                            "year": year,
+                            "profit_margin": round(random.uniform(0.15, 0.45), 2),
+                            "discount": round(random.uniform(0, 0.20), 2)
+                        })
+                        transaction_id += 1
+    
+    await db.sales_data.insert_many(sales_data)
+    logger.info(f"Generated {len(sales_data)} sample sales records")
+    return len(sales_data)
                     quantity = random.randint(10, 200)
                     
                     sales_data.append({
