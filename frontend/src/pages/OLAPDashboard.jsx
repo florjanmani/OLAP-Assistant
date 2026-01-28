@@ -687,11 +687,7 @@ export default function OLAPDashboard() {
     setInputValue("");
     setIsLoading(true);
 
-    // Add to query history
-    setQueryHistory((prev) => {
-      const newHistory = [{ query: messageText, timestamp: new Date().toISOString() }, ...prev];
-      return newHistory.slice(0, 20); // Keep last 20 queries
-    });
+    const historyId = Date.now().toString();
 
     try {
       const response = await axios.post(`${API}/chat`, {
@@ -712,6 +708,20 @@ export default function OLAPDashboard() {
       if (response.data.analysis_result) {
         setCurrentResult(response.data.analysis_result);
       }
+
+      // Add to query history with results
+      setQueryHistory((prev) => {
+        const newHistory = [{ 
+          id: historyId,
+          query: messageText, 
+          timestamp: new Date().toISOString(),
+          response: response.data.response,
+          result: response.data.analysis_result,
+          expanded: false
+        }, ...prev];
+        return newHistory.slice(0, 20); // Keep last 20 queries
+      });
+
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Failed to process your query");
@@ -722,6 +732,19 @@ export default function OLAPDashboard() {
         content: "I apologize, but I encountered an error processing your request. Please try again.",
       };
       setMessages((prev) => [...prev, errorMessage]);
+
+      // Add failed query to history
+      setQueryHistory((prev) => {
+        const newHistory = [{ 
+          id: historyId,
+          query: messageText, 
+          timestamp: new Date().toISOString(),
+          response: "Query failed",
+          result: null,
+          expanded: false
+        }, ...prev];
+        return newHistory.slice(0, 20);
+      });
     } finally {
       setIsLoading(false);
     }
