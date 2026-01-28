@@ -26,3 +26,6 @@ jq>=1.6.0
 typer>=0.9.0
 anthropic>=0.76.0
 duckdb>=1.4.0
+# Note: For production, you can use either:
+# - anthropic library with your own Anthropic API key
+# - Or keep the emergentintegrations for development
