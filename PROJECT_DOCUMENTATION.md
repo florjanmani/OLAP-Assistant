@@ -213,7 +213,7 @@ The application uses **sample sales data** with **960 records**.
 
 ## 🌐 HOW TO ACCESS
 
-**URL:** https://bi-chat-tool.preview.emergentagent.com
+**URL:** https://dataconverse-4.preview.emergentagent.com
 
 The application is live and ready to use. No login required.
 
