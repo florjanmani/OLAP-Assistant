@@ -1836,9 +1836,25 @@ export default function OLAPDashboard() {
                           </Badge>
                         ))}
                         {summary.dimensions.products?.length > 5 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{summary.dimensions.products.length - 5}
-                          </Badge>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <button className="inline-flex items-center rounded-full border border-input bg-background px-2.5 py-0.5 text-xs cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors">
+                                +{summary.dimensions.products.length - 5}
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64" align="start">
+                              <div className="space-y-2">
+                                <h4 className="font-semibold text-sm">All Products ({summary.dimensions.products.length})</h4>
+                                <div className="flex flex-wrap gap-1">
+                                  {summary.dimensions.products.map((p) => (
+                                    <Badge key={p} variant="secondary" className="text-xs">
+                                      {p}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
                         )}
                       </div>
                     </div>
