@@ -29,11 +29,14 @@ Requirements:
 - ✅ Sample sales data generation (960 records)
 - ✅ Natural language to OLAP query parsing
 - ✅ React dashboard with Swiss-style design
-- ✅ Bar chart visualization using Recharts
+- ✅ Multiple chart types: Bar, Pie, Line, Area
 - ✅ Data table with formatted results
 - ✅ Chat interface with example queries
 - ✅ Dark/Light mode toggle
 - ✅ Available dimensions display
+- ✅ CSV Export functionality
+- ✅ Query bookmarking with localStorage persistence
+- ✅ Chart/Table tab switching
 
 ## Architecture
 - **Frontend**: React + Tailwind CSS + Recharts
@@ -57,18 +60,16 @@ Requirements:
 - ✅ Chat interface
 
 ### P1 (Future)
-- Export results to CSV/Excel
-- Save and recall queries
-- More chart types (pie, line, area)
+- Export to Excel format
 - Multi-dimensional pivot tables
+- Advanced filtering UI
 
 ### P2 (Nice to Have)
 - Real-time data upload
-- Query history persistence
 - Team collaboration features
-- Advanced filtering UI
+- Dashboard templates
 
 ## Next Tasks
-1. Add CSV export functionality
-2. Implement query bookmarking
-3. Add more visualization options
+1. Add Excel export format
+2. Build advanced filter builder UI
+3. Add dashboard sharing capability
