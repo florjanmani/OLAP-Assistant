@@ -381,6 +381,28 @@ const ResultsCharts = ({ data, dimensions, chartType }) => {
   const renderChart = () => {
     switch (chartType) {
       case "pie":
+        // Custom label renderer for pie chart
+        const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
+          const RADIAN = Math.PI / 180;
+          const radius = outerRadius * 1.35;
+          const x = cx + radius * Math.cos(-midAngle * RADIAN);
+          const y = cy + radius * Math.sin(-midAngle * RADIAN);
+          
+          return (
+            <text
+              x={x}
+              y={y}
+              fill="hsl(var(--foreground))"
+              textAnchor={x > cx ? "start" : "end"}
+              dominantBaseline="central"
+              fontSize={12}
+              fontWeight={500}
+            >
+              {`${name} (${(percent * 100).toFixed(0)}%)`}
+            </text>
+          );
+        };
+        
         return (
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -389,25 +411,8 @@ const ResultsCharts = ({ data, dimensions, chartType }) => {
                 cx="50%"
                 cy="50%"
                 labelLine={true}
-                label={({ name, percent, x, y, midAngle }) => {
-                  const RADIAN = Math.PI / 180;
-                  const radius = 140;
-                  const cx2 = x + radius * Math.cos(-midAngle * RADIAN) * 0.1;
-                  const cy2 = y + radius * Math.sin(-midAngle * RADIAN) * 0.1;
-                  return (
-                    <text
-                      x={cx2}
-                      y={cy2}
-                      fill="hsl(var(--foreground))"
-                      textAnchor={x > 200 ? "start" : "end"}
-                      dominantBaseline="central"
-                      fontSize={12}
-                    >
-                      {`${name} (${(percent * 100).toFixed(0)}%)`}
-                    </text>
-                  );
-                }}
-                outerRadius={100}
+                label={renderCustomLabel}
+                outerRadius={90}
                 fill="#8884d8"
                 dataKey="sales"
               >
