@@ -1043,6 +1043,10 @@ export default function OLAPDashboard() {
                       <FileSpreadsheet className="w-4 h-4 mr-2" />
                       Export as Excel
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={exportToPDF} data-testid="export-pdf-option">
+                      <FileText className="w-4 h-4 mr-2" />
+                      Export as PDF Report
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <Button
