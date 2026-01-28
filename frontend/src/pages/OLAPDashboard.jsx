@@ -578,13 +578,6 @@ export default function OLAPDashboard() {
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-border py-4 mt-8">
-        <div className="max-w-screen-2xl mx-auto px-6 text-center text-xs text-muted-foreground">
-          OLAP Assistant — Kurs Special ne Informatike Project
-        </div>
-      </footer>
     </div>
   );
 }
