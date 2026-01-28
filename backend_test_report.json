@@ -8,44 +8,44 @@
       "test": "Root API Endpoint",
       "success": true,
       "details": "Status: 200",
-      "timestamp": "2026-01-28T09:09:14.439872"
+      "timestamp": "2026-01-28T10:21:00.942839"
     },
     {
       "test": "Data Initialization",
       "success": true,
       "details": "Status: 200",
-      "timestamp": "2026-01-28T09:09:15.474385"
+      "timestamp": "2026-01-28T10:21:01.982668"
     },
     {
       "test": "Data Summary",
       "success": true,
       "details": "Status: 200",
-      "timestamp": "2026-01-28T09:09:16.521144"
+      "timestamp": "2026-01-28T10:21:03.020701"
     },
     {
       "test": "Chat Endpoint - Natural Language Query",
       "success": true,
       "details": "Status: 200",
-      "timestamp": "2026-01-28T09:09:21.469819"
+      "timestamp": "2026-01-28T10:21:10.052939"
     },
     {
       "test": "Chat Endpoint - Simple Query",
       "success": true,
       "details": "Status: 200",
-      "timestamp": "2026-01-28T09:09:27.116126"
+      "timestamp": "2026-01-28T10:21:17.274128"
     },
     {
       "test": "Direct OLAP Query",
       "success": true,
       "details": "Status: 200",
-      "timestamp": "2026-01-28T09:09:28.169232"
+      "timestamp": "2026-01-28T10:21:18.332358"
     },
     {
       "test": "Sales by Region",
       "success": true,
       "details": "Status: 200",
-      "timestamp": "2026-01-28T09:09:29.202797"
+      "timestamp": "2026-01-28T10:21:19.368902"
     }
   ],
-  "timestamp": "2026-01-28T09:09:30.203337"
+  "timestamp": "2026-01-28T10:21:20.369589"
 }
