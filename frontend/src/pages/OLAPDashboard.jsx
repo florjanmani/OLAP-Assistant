@@ -877,6 +877,15 @@ export default function OLAPDashboard() {
     }
   };
 
+  // Toggle history item expanded state
+  const toggleHistoryExpanded = (id) => {
+    setQueryHistory((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, expanded: !item.expanded } : item
+      )
+    );
+  };
+
   // Export to CSV
   const exportToCSV = () => {
     if (!currentResult?.data || currentResult.data.length === 0) {
