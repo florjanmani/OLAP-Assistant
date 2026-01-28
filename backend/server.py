@@ -124,21 +124,24 @@ Always respond with valid JSON followed by a friendly explanation for business u
 
 async def process_natural_language_query(message: str, session_id: str) -> Dict[str, Any]:
     """Process natural language query using LLM and execute OLAP analysis."""
-    api_key = os.environ.get('EMERGENT_LLM_KEY')
+    api_key = os.environ.get('LLM_API_KEY') or os.environ.get('ANTHROPIC_API_KEY')
     
     if not api_key:
-        raise HTTPException(status_code=500, detail="LLM API key not configured")
+        raise HTTPException(status_code=500, detail="LLM API key not configured. Set LLM_API_KEY or ANTHROPIC_API_KEY in .env")
     
-    chat = LlmChat(
-        api_key=api_key,
-        session_id=session_id,
-        system_message=OLAP_SYSTEM_PROMPT
-    ).with_model("anthropic", "claude-sonnet-4-5-20250929")
-    
-    user_message = UserMessage(text=message)
+    client = anthropic.Anthropic(api_key=api_key)
     
     try:
-        response = await chat.send_message(user_message)
+        response_message = client.messages.create(
+            model="claude-sonnet-4-5-20250929",
+            max_tokens=1024,
+            system=OLAP_SYSTEM_PROMPT,
+            messages=[
+                {"role": "user", "content": message}
+            ]
+        )
+        
+        response = response_message.content[0].text
         
         # Parse JSON from response
         json_start = response.find('{')
