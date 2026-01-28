@@ -381,38 +381,19 @@ const ResultsCharts = ({ data, dimensions, chartType }) => {
   const renderChart = () => {
     switch (chartType) {
       case "pie":
-        const RADIAN = Math.PI / 180;
-        const renderPieLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
-          const radius = outerRadius + 30;
-          const x = cx + radius * Math.cos(-midAngle * RADIAN);
-          const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-          return (
-            <text 
-              x={x} 
-              y={y} 
-              fill="currentColor"
-              textAnchor={x > cx ? 'start' : 'end'} 
-              dominantBaseline="central"
-              style={{ fontSize: '12px', fill: 'hsl(var(--foreground))' }}
-            >
-              {`${name} (${(percent * 100).toFixed(0)}%)`}
-            </text>
-          );
-        };
-        
         return (
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart margin={{ top: 40, right: 100, bottom: 40, left: 100 }}>
+            <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                labelLine={{ stroke: "hsl(var(--muted-foreground))", strokeWidth: 1 }}
-                label={renderPieLabel}
-                outerRadius={70}
+                outerRadius={90}
                 fill="#8884d8"
                 dataKey="sales"
+                nameKey="name"
+                label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                labelLine={false}
               >
                 {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
@@ -424,9 +405,14 @@ const ResultsCharts = ({ data, dimensions, chartType }) => {
                   border: "1px solid hsl(var(--border))",
                   borderRadius: "4px",
                 }}
-                formatter={(value) => [`$${value.toLocaleString()}`, "Sales"]}
+                formatter={(value, name) => [`$${value.toLocaleString()}`, name]}
               />
-              <Legend />
+              <Legend 
+                formatter={(value, entry) => {
+                  const item = chartData.find(d => d.name === value);
+                  return `${value} - $${item?.sales?.toLocaleString() || 0}`;
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         );
