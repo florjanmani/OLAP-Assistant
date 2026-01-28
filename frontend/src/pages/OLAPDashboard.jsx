@@ -601,17 +601,116 @@ export default function OLAPDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Filter Builder */}
+            <Dialog open={filterDialogOpen} onOpenChange={setFilterDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" data-testid="filter-builder-btn">
+                  <SlidersHorizontal className="w-4 h-4 mr-2" />
+                  Filter Builder
+                  {filters.length > 0 && (
+                    <Badge className="ml-2 h-5 px-1.5" variant="secondary">
+                      {filters.length}
+                    </Badge>
+                  )}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Build Custom Filters</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  {filters.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      No filters added. Click "Add Filter" to start.
+                    </p>
+                  ) : (
+                    filters.map((filter, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <Select
+                          value={filter.dimension}
+                          onValueChange={(v) => updateFilter(idx, "dimension", v)}
+                        >
+                          <SelectTrigger className="w-[140px]" data-testid={`filter-dimension-${idx}`}>
+                            <SelectValue placeholder="Dimension" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="region">Region</SelectItem>
+                            <SelectItem value="quarter">Quarter</SelectItem>
+                            <SelectItem value="year">Year</SelectItem>
+                            <SelectItem value="product">Product</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <span className="text-sm text-muted-foreground">=</span>
+                        <Select
+                          value={filter.value}
+                          onValueChange={(v) => updateFilter(idx, "value", v)}
+                          disabled={!filter.dimension}
+                        >
+                          <SelectTrigger className="flex-1" data-testid={`filter-value-${idx}`}>
+                            <SelectValue placeholder="Value" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {getFilterOptions(filter.dimension).map((opt) => (
+                              <SelectItem key={opt} value={String(opt)}>
+                                {opt}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeFilter(idx)}
+                          data-testid={`remove-filter-${idx}`}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={addFilter}
+                    className="w-full"
+                    data-testid="add-filter-btn"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Filter
+                  </Button>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={clearFilters} data-testid="clear-filters-btn">
+                    Clear All
+                  </Button>
+                  <Button onClick={applyFilters} disabled={filters.length === 0} data-testid="apply-filters-btn">
+                    Apply Filters
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
             {currentResult && (
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={exportToCSV}
-                  data-testid="export-csv-btn"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export CSV
-                </Button>
+                {/* Export Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" data-testid="export-dropdown">
+                      <Download className="w-4 h-4 mr-2" />
+                      Export
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={exportToCSV} data-testid="export-csv-option">
+                      <Download className="w-4 h-4 mr-2" />
+                      Export as CSV
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={exportToExcel} data-testid="export-excel-option">
+                      <FileSpreadsheet className="w-4 h-4 mr-2" />
+                      Export as Excel
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <Button
                   variant="outline"
                   size="sm"
