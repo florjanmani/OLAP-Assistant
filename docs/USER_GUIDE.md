@@ -1,262 +1,307 @@
-# User Guide
+# OLAP Assistant - User Guide
 
-## Welcome to OLAP Assistant
+## Introduction
 
-This guide will help you use the OLAP Assistant to analyze your sales data using natural language queries.
+Welcome to the OLAP Assistant! This guide will help you use the application to analyze sales data using natural language queries.
+
+---
+
+## What is OLAP?
+
+**OLAP (Online Analytical Processing)** is a technology that allows you to analyze data from multiple perspectives. Think of your data as a cube with different dimensions:
+
+```
+                    ┌───────────────┐
+                   /               /│
+                  /   TIME        / │
+                 /               /  │
+                ┌───────────────┐   │
+                │               │   │
+    REGION ──── │   SALES DATA  │ ──── PRODUCT
+                │               │   │
+                │               │  /
+                └───────────────┘ /
+                                 /
+```
+
+**Dimensions** are categories you can group by:
+- **Time**: Year, Quarter, Month
+- **Region**: North, South, East, West, Central
+- **Product**: Laptop, Phone, Tablet, etc.
+
+**Measures** are the numbers you analyze:
+- Sales Amount ($)
+- Quantity Sold
+- Profit Margin
 
 ---
 
 ## Getting Started
 
-### Accessing the Application
+### Dashboard Overview
 
-1. Open your web browser
-2. Navigate to the application URL
-3. The dashboard will load with sample data automatically
+When you open the application, you'll see:
 
-### Understanding the Interface
+1. **Metric Cards** (top) - Summary statistics
+   - Total Records: Number of transactions
+   - Total Sales: Sum of all sales
+   - Units Sold: Total quantity
+   - Avg Sale: Average transaction value
+
+2. **Query Assistant** (left panel) - Where you type questions
+
+3. **Analysis Results** (center) - Charts and tables
+
+4. **Available Dimensions** (bottom) - Data exploration options
+
+---
+
+## Asking Questions
+
+Type your question in natural language. Here are examples for each OLAP operation:
+
+### Drill-Down (See More Detail)
+
+Go from summary to detail level.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  HEADER: Logo, Export, History, Compare, Guide, Theme Toggle    │
-├───────────────────────┬─────────────────────────────────────────┤
-│                       │                                         │
-│   QUERY ASSISTANT     │         ANALYSIS RESULTS                │
-│                       │                                         │
-│   - Type queries      │   - Metric Cards (KPIs)                 │
-│   - Example queries   │   - Charts (Bar, Pie, Line, Area)       │
-│   - Chat history      │   - Data Tables                         │
-│                       │   - Dimension Info                      │
-└───────────────────────┴─────────────────────────────────────────┘
+"Break down Q4 sales by month"
+"Drill into North region by product"
+"Show monthly details for 2024"
+```
+
+### Roll-Up (See Summary)
+
+Aggregate from detail to summary.
+
+```
+"Show total sales by category"
+"What's the overall sales by year?"
+"Summarize products to category level"
+```
+
+### Slice (Filter One Thing)
+
+Filter on a single dimension.
+
+```
+"Show only Q4 sales"
+"Filter to North region"
+"Just 2024 data"
+```
+
+### Dice (Filter Multiple Things)
+
+Filter on multiple dimensions at once.
+
+```
+"Q4 sales in North and South regions"
+"Compare Laptop and Phone in Q4"
+"Electronics in North for 2024"
+```
+
+### Pivot (Change Perspective)
+
+See data from a different angle.
+
+```
+"Show products by region instead of region by products"
+"Pivot quarters as columns"
 ```
 
 ---
 
-## Basic Usage
+## Using the Interface
 
-### Asking Questions
+### Filter Builder
 
-Simply type your question in natural language:
-
-| What You Want | How to Ask |
-|---------------|------------|
-| Sales by region | "Show sales by region" |
-| Q4 performance | "Break down Q4 sales" |
-| Product comparison | "Compare Laptop vs Phone sales" |
-| Monthly trend | "Show sales trend by month" |
-| Category totals | "Total sales by category" |
-
-### Using Example Queries
-
-Click any example query to auto-fill the input:
-- "Break down Q4 sales by region"
-- "Show top 5 products by revenue"
-- "Compare sales between North and South"
-- "What's the total sales by category?"
-
----
-
-## OLAP Operations Explained
-
-### Drill-Down
-Navigate from summary to detailed data.
-
-**Example**: "Drill into North region by month"
-- Starts with: North region total
-- Shows: Monthly breakdown for North
-
-### Roll-Up
-Aggregate detailed data into summaries.
-
-**Example**: "Show total sales by category"
-- Starts with: Individual products
-- Shows: Category totals (Electronics, Computing, Accessories)
-
-### Slice
-Filter data on a single dimension.
-
-**Example**: "Show only Q4 sales"
-- Filters: Quarter = Q4
-- Shows: All Q4 data
-
-### Dice
-Filter on multiple dimensions.
-
-**Example**: "Q4 sales in North and South regions"
-- Filters: Quarter = Q4 AND Region IN (North, South)
-- Shows: Filtered subset
-
-### Pivot
-Change the viewing perspective.
-
-**Example**: "Show products as rows, quarters as columns"
-- Rotates: Data view
-- Shows: Different arrangement
-
----
-
-## Features Guide
-
-### 1. Chart Types
-
-Click the "Chart Type" dropdown to switch between:
-
-| Type | Best For |
-|------|----------|
-| Bar | Comparing values across categories |
-| Pie | Showing proportions of a whole |
-| Line | Displaying trends over time |
-| Area | Showing cumulative trends |
-
-### 2. Export Options
-
-Click "Export" to download your data:
-
-| Format | Use Case |
-|--------|----------|
-| CSV | Open in Excel, further analysis |
-| Excel | Formatted spreadsheet (.xlsx) |
-| PDF | Printable report with styling |
-
-### 3. Filter Builder
-
-Click "Filter Builder" to create filters visually:
+Click **"Filter Builder"** to visually create filters:
 
 1. Click "Add Filter"
-2. Select dimension (Region, Quarter, Product)
-3. Select value
-4. Click "Apply Filters"
+2. Select a dimension (Region, Quarter, Year, Product)
+3. Select a value
+4. Repeat for multiple filters
+5. Click "Apply Filters"
 
-### 4. Query History
+### OLAP Guide
 
-Click "History" to see past queries:
+Click **"OLAP Guide"** to see explanations of all operations with examples. Click any "Try:" link to populate a sample query.
 
-- View all queries from current session
+### Data Cube
+
+Click **"Data Cube"** to see a visual representation of how your data is organized in a multidimensional cube.
+
+### Query History
+
+Click **"History"** to see all your previous queries. You can:
 - Click to expand and see full results
-- Re-run any previous query
-- Load results without re-querying
+- Click "Re-run Query" to run it again
+- Click "Load Results" to view past results
 
-### 5. Comparison Mode
+### Comparison Mode
 
-Click "Compare" for side-by-side analysis:
+Click **"Compare"** to compare two items side-by-side:
 
-1. Select dimension (Region, Quarter, Product)
-2. Choose first item
-3. Choose second item
+1. Select what to compare by (Region, Quarter, Product)
+2. Select first item
+3. Select second item
 4. Click "Run Comparison"
 
-### 6. Query Bookmarks
+---
 
-Save frequently used queries:
+## Understanding Results
 
-1. Run a query
-2. Click "Save" in the header
-3. Access saved queries in "Saved Queries" section
+### Charts
 
-### 7. OLAP Guide
+The analysis results appear as charts. Use the chart type selector:
 
-Click "OLAP Guide" to learn about operations:
+- **Bar Chart**: Compare values across categories
+- **Pie Chart**: See proportions of a whole
+- **Line Chart**: View trends over time
+- **Area Chart**: See cumulative values
 
-- Drill-Down explanation and example
-- Roll-Up explanation and example
-- Slice explanation and example
-- Dice explanation and example
-- Pivot explanation and example
+### Data Table
 
-### 8. Data Cube
+Click "Table" tab to see the raw numbers:
 
-Click "Data Cube" to see the data structure:
+| Region | Total Sales | Avg Sales | Count |
+|--------|-------------|-----------|-------|
+| North  | $47.8M      | $21,168   | 2,259 |
+| East   | $45.9M      | $20,882   | 2,198 |
+| ...    | ...         | ...       | ...   |
 
-- 3D visualization of dimensions
-- TIME, REGION, PRODUCT axes
-- Measures in the center
+### OLAP Operation Badge
+
+Each result shows a colored badge indicating the operation:
+- 🔵 **DRILL-DOWN** - Blue
+- 🟢 **ROLL-UP** - Green
+- 🟣 **SLICE** - Purple
+- 🟠 **DICE** - Orange
+- 🔴 **PIVOT** - Pink
+- 🔷 **AGGREGATE** - Cyan
+
+Click the badge to learn more about that operation.
+
+---
+
+## Exporting Results
+
+Click **"Export"** to download your analysis:
+
+| Format | Best For |
+|--------|----------|
+| **CSV** | Spreadsheet software (Excel, Google Sheets) |
+| **Excel** | Native Excel with formatting |
+| **PDF Report** | Sharing with colleagues, presentations |
+
+---
+
+## Saving Queries
+
+### Bookmarks
+
+Click **"Save"** button to bookmark a query. Your saved queries appear in the left panel and persist between sessions.
+
+### History
+
+All queries are automatically saved in history. Access via the "History" button.
 
 ---
 
 ## Tips for Better Queries
 
 ### Be Specific
-❌ "Show me data"
-✅ "Show Q4 sales by region"
+
+❌ "Show me sales"  
+✅ "Show Q4 2024 sales by region"
 
 ### Use Dimension Names
-❌ "Break it down"
-✅ "Break down by product category"
 
-### Include Time Periods
-❌ "What are sales?"
-✅ "What are sales for Q4 2024?"
+❌ "Break it down more"  
+✅ "Break down by month"
 
-### Ask for Comparisons
-❌ "How is North doing?"
-✅ "Compare North vs South sales"
+### Combine Operations
+
+✅ "Show Q4 sales by region, then drill into North by month"
+
+### Ask Follow-ups
+
+After seeing results, ask related questions:
+1. "Show sales by region"
+2. "Drill into North by quarter"
+3. "Compare Q3 and Q4 for North"
 
 ---
 
-## Understanding Results
+## Example Analysis Session
 
-### Metric Cards
+Here's a typical analysis workflow:
 
-| Metric | Meaning |
-|--------|---------|
-| Total Records | Number of transactions |
-| Total Sales | Sum of all sales ($) |
-| Units Sold | Total quantity sold |
-| Avg Sale | Average transaction value |
+**Step 1: Get Overview**
+```
+Query: "What are total sales by region?"
+Result: See which regions perform best
+```
 
-### Operation Badge
+**Step 2: Investigate Top Performer**
+```
+Query: "Drill into North region by quarter"
+Result: See seasonal patterns
+```
 
-Click the badge (e.g., "SLICE") to learn what operation was performed.
+**Step 3: Focus on Peak Period**
+```
+Query: "Show North Q4 sales by product"
+Result: See which products drove Q4 success
+```
 
-### Dimension Badges
+**Step 4: Compare**
+```
+Query: "Compare Laptop and Phone sales in North Q4"
+Result: Side-by-side product comparison
+```
 
-Click dimension names (e.g., "region") to see what each dimension represents.
-
-### Filter Badges
-
-Click filter badges (e.g., "quarter: Q4") to see what filters are applied.
+**Step 5: Export**
+```
+Click Export → PDF to share findings
+```
 
 ---
 
 ## Keyboard Shortcuts
 
-| Action | Shortcut |
-|--------|----------|
-| Submit query | Enter |
-| Clear input | Escape |
+| Key | Action |
+|-----|--------|
+| `Enter` | Send query |
+| `↑` | Previous query (when input focused) |
+| `Escape` | Close dialogs |
+
+---
+
+## Dark Mode
+
+Click the moon/sun icon in the header to toggle between light and dark themes.
 
 ---
 
 ## Troubleshooting
 
-### Query Returns No Data
-- Check your filters aren't too restrictive
-- Try removing some filters
-- Verify dimension values are correct
+### "No Analysis Yet"
 
-### Chart Not Displaying
-- Wait for query to complete
-- Try switching chart types
-- Refresh the page
+The analysis panel is empty until you ask a question. Type a query and press Enter or click the send button.
 
-### Export Not Working
-- Ensure you have query results
-- Check your browser's download settings
-- Try a different export format
+### Query Doesn't Work
 
----
+Try rephrasing:
+- Be more specific about dimensions
+- Use exact names (e.g., "Q4" not "fourth quarter")
+- Check spelling of regions and products
 
-## Example Workflow
+### Chart Not Showing
 
-### Scenario: Quarterly Sales Analysis
-
-1. **Start broad**: "Show total sales by quarter"
-2. **Identify leader**: Note Q4 has highest sales
-3. **Drill down**: "Break down Q4 by region"
-4. **Find top region**: Note North leads
-5. **Further detail**: "Show North Q4 sales by product"
-6. **Export**: Download PDF report
-7. **Save**: Bookmark the query for later
+- Ensure your query returned data (check row count)
+- Switch to Table view to see raw results
+- Try a broader query (fewer filters)
 
 ---
 
@@ -264,20 +309,27 @@ Click filter badges (e.g., "quarter: Q4") to see what filters are applied.
 
 | Term | Definition |
 |------|------------|
-| Dimension | Category for grouping data (Region, Product, Time) |
-| Measure | Numeric value to analyze (Sales, Quantity) |
-| OLAP | Online Analytical Processing |
-| KPI | Key Performance Indicator |
-| Drill-Down | Navigate to more detail |
-| Roll-Up | Aggregate to summary |
-| Slice | Filter on one dimension |
-| Dice | Filter on multiple dimensions |
-| Pivot | Rotate the data view |
+| **Dimension** | A category to group data by (Region, Time, Product) |
+| **Measure** | A numeric value to analyze (Sales, Quantity) |
+| **Drill-Down** | Go from summary to detail (Year → Month) |
+| **Roll-Up** | Go from detail to summary (Product → Category) |
+| **Slice** | Filter on one dimension (only Q4) |
+| **Dice** | Filter on multiple dimensions (Q4 AND North) |
+| **Pivot** | Rotate the view of data |
+| **Star Schema** | Database design with fact and dimension tables |
+| **Fact Table** | Contains transaction records |
+| **Dimension Table** | Contains reference data (regions, products) |
 
 ---
 
-## Need Help?
+## Getting Help
 
-- Click "OLAP Guide" for operation explanations
-- Click any badge for more information
-- Review example queries for inspiration
+If you have questions about:
+- **OLAP Concepts**: Click "OLAP Guide" in the header
+- **Data Structure**: Click "Data Cube" to visualize
+- **Query Syntax**: See example queries in the left panel
+- **Technical Issues**: Contact the system administrator
+
+---
+
+**Happy Analyzing!** 📊
