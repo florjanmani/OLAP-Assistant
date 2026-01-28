@@ -531,6 +531,51 @@ export default function OLAPDashboard() {
     return lastUserMessage && bookmarks.includes(lastUserMessage.content);
   };
 
+  // Filter builder functions
+  const addFilter = () => {
+    setFilters([...filters, { dimension: "", value: "" }]);
+  };
+
+  const updateFilter = (index, field, value) => {
+    const newFilters = [...filters];
+    newFilters[index][field] = value;
+    setFilters(newFilters);
+  };
+
+  const removeFilter = (index) => {
+    setFilters(filters.filter((_, i) => i !== index));
+  };
+
+  const applyFilters = () => {
+    if (filters.length === 0 || filters.some(f => !f.dimension || !f.value)) {
+      toast.error("Please complete all filter fields");
+      return;
+    }
+
+    // Build natural language query from filters
+    const filterDescriptions = filters.map(f => `${f.dimension} is ${f.value}`).join(" and ");
+    const query = `Show sales where ${filterDescriptions}`;
+    
+    setFilterDialogOpen(false);
+    sendMessage(query);
+  };
+
+  const clearFilters = () => {
+    setFilters([]);
+  };
+
+  // Get available filter options from summary
+  const getFilterOptions = (dimension) => {
+    if (!summary?.dimensions) return [];
+    switch (dimension) {
+      case "region": return summary.dimensions.regions || [];
+      case "quarter": return summary.dimensions.quarters || [];
+      case "year": return summary.dimensions.years?.map(String) || [];
+      case "product": return summary.dimensions.products || [];
+      default: return [];
+    }
+  };
+
   const exampleQueries = [
     "Break down Q4 sales by region",
     "Show top 5 products by revenue",
