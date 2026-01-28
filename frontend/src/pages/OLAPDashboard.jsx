@@ -622,6 +622,12 @@ export default function OLAPDashboard() {
     setInputValue("");
     setIsLoading(true);
 
+    // Add to query history
+    setQueryHistory((prev) => {
+      const newHistory = [{ query: messageText, timestamp: new Date().toISOString() }, ...prev];
+      return newHistory.slice(0, 20); // Keep last 20 queries
+    });
+
     try {
       const response = await axios.post(`${API}/chat`, {
         message: messageText,
@@ -660,6 +666,126 @@ export default function OLAPDashboard() {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
+    }
+  };
+
+  // Run comparison between two items
+  const runComparison = async () => {
+    if (!compareItems.item1 || !compareItems.item2) {
+      toast.error("Please select both items to compare");
+      return;
+    }
+
+    setIsComparing(true);
+    const query = `Compare sales between ${compareItems.item1} and ${compareItems.item2}`;
+    
+    try {
+      const response = await axios.post(`${API}/chat`, {
+        message: query,
+        session_id: sessionId,
+      });
+
+      if (response.data.analysis_result) {
+        setCompareResult(response.data.analysis_result);
+      }
+      
+      // Add to query history
+      setQueryHistory((prev) => {
+        const newHistory = [{ query, timestamp: new Date().toISOString() }, ...prev];
+        return newHistory.slice(0, 20);
+      });
+      
+      toast.success("Comparison complete");
+    } catch (error) {
+      console.error("Error running comparison:", error);
+      toast.error("Failed to run comparison");
+    } finally {
+      setIsComparing(false);
+    }
+  };
+
+  // Export to PDF
+  const exportToPDF = async () => {
+    if (!currentResult?.data || currentResult.data.length === 0) {
+      toast.error("No data to export");
+      return;
+    }
+
+    toast.info("Generating PDF report...");
+
+    try {
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      
+      // Title
+      pdf.setFontSize(20);
+      pdf.setTextColor(0, 71, 171);
+      pdf.text("OLAP Analysis Report", pageWidth / 2, 20, { align: "center" });
+      
+      // Date
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`Generated: ${new Date().toLocaleString()}`, pageWidth / 2, 28, { align: "center" });
+      
+      // Operation info
+      pdf.setFontSize(12);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text(`Operation: ${currentResult.operation?.replace(/_/g, " ").toUpperCase() || "ANALYSIS"}`, 15, 40);
+      pdf.text(`Dimensions: ${currentResult.dimensions?.join(", ") || "N/A"}`, 15, 48);
+      
+      if (currentResult.filters && Object.keys(currentResult.filters).length > 0) {
+        const filterText = Object.entries(currentResult.filters)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(", ");
+        pdf.text(`Filters: ${filterText}`, 15, 56);
+      }
+      
+      // Table header
+      let yPos = 70;
+      const headers = Object.keys(currentResult.data[0]);
+      const colWidth = (pageWidth - 30) / headers.length;
+      
+      pdf.setFillColor(0, 71, 171);
+      pdf.rect(15, yPos - 5, pageWidth - 30, 8, "F");
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(9);
+      
+      headers.forEach((header, idx) => {
+        const displayHeader = header.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase());
+        pdf.text(displayHeader.substring(0, 12), 17 + idx * colWidth, yPos);
+      });
+      
+      // Table data
+      yPos += 10;
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFontSize(8);
+      
+      currentResult.data.slice(0, 15).forEach((row, rowIdx) => {
+        if (rowIdx % 2 === 0) {
+          pdf.setFillColor(245, 245, 245);
+          pdf.rect(15, yPos - 4, pageWidth - 30, 7, "F");
+        }
+        
+        headers.forEach((header, idx) => {
+          let value = row[header];
+          if (typeof value === "number") {
+            value = value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+          }
+          pdf.text(String(value).substring(0, 15), 17 + idx * colWidth, yPos);
+        });
+        yPos += 7;
+      });
+      
+      // Footer
+      pdf.setFontSize(8);
+      pdf.setTextColor(150, 150, 150);
+      pdf.text("OLAP Assistant - Natural Language Business Analytics", pageWidth / 2, 285, { align: "center" });
+      
+      pdf.save(`olap_report_${new Date().toISOString().slice(0, 10)}.pdf`);
+      toast.success("PDF report downloaded");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Failed to generate PDF");
     }
   };
 
