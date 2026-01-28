@@ -555,7 +555,14 @@ export default function OLAPDashboard() {
   const [filters, setFilters] = useState([]);
   const [guideDialogOpen, setGuideDialogOpen] = useState(false);
   const [cubeDialogOpen, setCubeDialogOpen] = useState(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+  const [queryHistory, setQueryHistory] = useState([]);
+  const [compareDialogOpen, setCompareDialogOpen] = useState(false);
+  const [compareItems, setCompareItems] = useState({ item1: "", item2: "", dimension: "region" });
+  const [compareResult, setCompareResult] = useState(null);
+  const [isComparing, setIsComparing] = useState(false);
   const messagesEndRef = useRef(null);
+  const resultsRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
