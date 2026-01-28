@@ -7,6 +7,13 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -29,6 +36,12 @@ import {
   Sparkles,
   Moon,
   Sun,
+  Download,
+  Bookmark,
+  BookmarkCheck,
+  PieChart as PieChartIcon,
+  LineChart as LineChartIcon,
+  Trash2,
 } from "lucide-react";
 import {
   BarChart,
@@ -43,12 +56,15 @@ import {
   Cell,
   LineChart,
   Line,
+  Legend,
+  Area,
+  AreaChart,
 } from "recharts";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const CHART_COLORS = ["#0047AB", "#FF3B30", "#00C7BE", "#AF52DE", "#FF9500"];
+const CHART_COLORS = ["#0047AB", "#FF3B30", "#00C7BE", "#AF52DE", "#FF9500", "#34C759", "#FF2D55", "#5856D6"];
 
 // Chat Message Component
 const ChatMessage = ({ message }) => {
@@ -78,7 +94,7 @@ const ChatMessage = ({ message }) => {
 };
 
 // Results Table Component
-const ResultsTable = ({ data, dimensions }) => {
+const ResultsTable = ({ data }) => {
   if (!data || data.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -122,45 +138,137 @@ const ResultsTable = ({ data, dimensions }) => {
   );
 };
 
-// Results Chart Component
-const ResultsChart = ({ data, dimensions }) => {
+// Multi-Chart Component
+const ResultsCharts = ({ data, dimensions, chartType }) => {
   if (!data || data.length === 0) return null;
 
   const chartData = data.slice(0, 10).map((item) => ({
     name: dimensions.map((d) => item[d]).join(" - "),
-    value: item.total_sales_amount || 0,
+    sales: item.total_sales_amount || 0,
     quantity: item.total_quantity || 0,
+    avgSales: item.avg_sales_amount || 0,
   }));
 
-  return (
-    <div className="h-[300px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis
-            dataKey="name"
-            tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-            angle={-45}
-            textAnchor="end"
-            height={80}
-          />
-          <YAxis
-            tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-            tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
-          />
-          <Tooltip
-            contentStyle={{
-              background: "hsl(var(--card))",
-              border: "1px solid hsl(var(--border))",
-              borderRadius: "4px",
-            }}
-            formatter={(value) => [`$${value.toLocaleString()}`, "Sales"]}
-          />
-          <Bar dataKey="value" fill={CHART_COLORS[0]} radius={[2, 2, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  );
+  const renderChart = () => {
+    switch (chartType) {
+      case "pie":
+        return (
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                outerRadius={120}
+                fill="#8884d8"
+                dataKey="sales"
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{
+                  background: "hsl(var(--card))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "4px",
+                }}
+                formatter={(value) => [`$${value.toLocaleString()}`, "Sales"]}
+              />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        );
+      case "line":
+        return (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: "hsl(var(--card))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "4px",
+                }}
+                formatter={(value) => [`$${value.toLocaleString()}`, "Sales"]}
+              />
+              <Line type="monotone" dataKey="sales" stroke={CHART_COLORS[0]} strokeWidth={2} dot={{ fill: CHART_COLORS[0] }} />
+            </LineChart>
+          </ResponsiveContainer>
+        );
+      case "area":
+        return (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: "hsl(var(--card))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "4px",
+                }}
+                formatter={(value) => [`$${value.toLocaleString()}`, "Sales"]}
+              />
+              <Area type="monotone" dataKey="sales" stroke={CHART_COLORS[0]} fill={CHART_COLORS[0]} fillOpacity={0.3} />
+            </AreaChart>
+          </ResponsiveContainer>
+        );
+      default: // bar
+        return (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                angle={-45}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
+                tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: "hsl(var(--card))",
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "4px",
+                }}
+                formatter={(value) => [`$${value.toLocaleString()}`, "Sales"]}
+              />
+              <Bar dataKey="sales" fill={CHART_COLORS[0]} radius={[2, 2, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        );
+    }
+  };
+
+  return <div className="h-[300px] w-full">{renderChart()}</div>;
 };
 
 // Metric Card Component
@@ -221,6 +329,8 @@ export default function OLAPDashboard() {
   const [summary, setSummary] = useState(null);
   const [currentResult, setCurrentResult] = useState(null);
   const [darkMode, setDarkMode] = useState(false);
+  const [chartType, setChartType] = useState("bar");
+  const [bookmarks, setBookmarks] = useState([]);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -239,6 +349,19 @@ export default function OLAPDashboard() {
     }
   }, [darkMode]);
 
+  // Load bookmarks from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("olap-bookmarks");
+    if (saved) {
+      setBookmarks(JSON.parse(saved));
+    }
+  }, []);
+
+  // Save bookmarks to localStorage
+  useEffect(() => {
+    localStorage.setItem("olap-bookmarks", JSON.stringify(bookmarks));
+  }, [bookmarks]);
+
   const initializeData = useCallback(async () => {
     try {
       await axios.post(`${API}/data/init`);
@@ -255,13 +378,13 @@ export default function OLAPDashboard() {
     initializeData();
   }, [initializeData]);
 
-  const sendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
+  const sendMessage = async (messageText = inputValue) => {
+    if (!messageText.trim() || isLoading) return;
 
     const userMessage = {
       id: Date.now().toString(),
       role: "user",
-      content: inputValue,
+      content: messageText,
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -270,7 +393,7 @@ export default function OLAPDashboard() {
 
     try {
       const response = await axios.post(`${API}/chat`, {
-        message: inputValue,
+        message: messageText,
         session_id: sessionId,
       });
 
@@ -309,6 +432,62 @@ export default function OLAPDashboard() {
     }
   };
 
+  // Export to CSV
+  const exportToCSV = () => {
+    if (!currentResult?.data || currentResult.data.length === 0) {
+      toast.error("No data to export");
+      return;
+    }
+
+    const headers = Object.keys(currentResult.data[0]);
+    const csvContent = [
+      headers.join(","),
+      ...currentResult.data.map((row) =>
+        headers.map((h) => {
+          const val = row[h];
+          return typeof val === "string" && val.includes(",") ? `"${val}"` : val;
+        }).join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `olap_analysis_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Data exported to CSV");
+  };
+
+  // Bookmark current query
+  const toggleBookmark = () => {
+    const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
+    if (!lastUserMessage) return;
+
+    const query = lastUserMessage.content;
+    const isBookmarked = bookmarks.includes(query);
+
+    if (isBookmarked) {
+      setBookmarks(bookmarks.filter((b) => b !== query));
+      toast.success("Bookmark removed");
+    } else {
+      setBookmarks([...bookmarks, query]);
+      toast.success("Query bookmarked");
+    }
+  };
+
+  const removeBookmark = (query) => {
+    setBookmarks(bookmarks.filter((b) => b !== query));
+    toast.success("Bookmark removed");
+  };
+
+  const isCurrentQueryBookmarked = () => {
+    const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
+    return lastUserMessage && bookmarks.includes(lastUserMessage.content);
+  };
+
   const exampleQueries = [
     "Break down Q4 sales by region",
     "Show top 5 products by revenue",
@@ -333,14 +512,42 @@ export default function OLAPDashboard() {
               </p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setDarkMode(!darkMode)}
-            data-testid="theme-toggle"
-          >
-            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </Button>
+          <div className="flex items-center gap-2">
+            {currentResult && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={exportToCSV}
+                  data-testid="export-csv-btn"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export CSV
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleBookmark}
+                  data-testid="bookmark-btn"
+                >
+                  {isCurrentQueryBookmarked() ? (
+                    <BookmarkCheck className="w-4 h-4 mr-2 text-primary" />
+                  ) : (
+                    <Bookmark className="w-4 h-4 mr-2" />
+                  )}
+                  {isCurrentQueryBookmarked() ? "Saved" : "Save"}
+                </Button>
+              </>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setDarkMode(!darkMode)}
+              data-testid="theme-toggle"
+            >
+              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -349,7 +556,44 @@ export default function OLAPDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Sidebar - Chat */}
           <div className="lg:col-span-4 space-y-4">
-            <Card className="border-border h-[calc(100vh-200px)] flex flex-col">
+            {/* Bookmarks Card */}
+            {bookmarks.length > 0 && (
+              <Card className="border-border" data-testid="bookmarks-card">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <BookmarkCheck className="w-4 h-4" />
+                    Saved Queries ({bookmarks.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-2">
+                  <div className="space-y-1 max-h-32 overflow-y-auto">
+                    {bookmarks.map((query, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between gap-2 text-xs font-mono bg-muted rounded px-2 py-1.5 group"
+                      >
+                        <button
+                          onClick={() => sendMessage(query)}
+                          className="text-left truncate flex-1 hover:text-primary"
+                          data-testid={`bookmark-query-${idx}`}
+                        >
+                          {query}
+                        </button>
+                        <button
+                          onClick={() => removeBookmark(query)}
+                          className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-opacity"
+                          data-testid={`remove-bookmark-${idx}`}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            <Card className="border-border h-[calc(100vh-280px)] flex flex-col">
               <CardHeader className="pb-3 border-b border-border">
                 <CardTitle className="text-base flex items-center gap-2">
                   <MessageSquare className="w-4 h-4" />
@@ -408,7 +652,7 @@ export default function OLAPDashboard() {
                     data-testid="query-input"
                   />
                   <Button
-                    onClick={sendMessage}
+                    onClick={() => sendMessage()}
                     disabled={!inputValue.trim() || isLoading}
                     size="icon"
                     data-testid="send-button"
@@ -454,9 +698,38 @@ export default function OLAPDashboard() {
               <CardHeader className="pb-3 border-b border-border">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base">Analysis Results</CardTitle>
-                  {currentResult && (
-                    <OperationBadge operation={currentResult.operation} />
-                  )}
+                  <div className="flex items-center gap-2">
+                    {currentResult && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm" data-testid="chart-type-dropdown">
+                            {chartType === "bar" && <BarChart3 className="w-4 h-4 mr-2" />}
+                            {chartType === "pie" && <PieChartIcon className="w-4 h-4 mr-2" />}
+                            {chartType === "line" && <LineChartIcon className="w-4 h-4 mr-2" />}
+                            {chartType === "area" && <TrendingUp className="w-4 h-4 mr-2" />}
+                            Chart Type
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem onClick={() => setChartType("bar")} data-testid="chart-bar">
+                            <BarChart3 className="w-4 h-4 mr-2" /> Bar Chart
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setChartType("pie")} data-testid="chart-pie">
+                            <PieChartIcon className="w-4 h-4 mr-2" /> Pie Chart
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setChartType("line")} data-testid="chart-line">
+                            <LineChartIcon className="w-4 h-4 mr-2" /> Line Chart
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setChartType("area")} data-testid="chart-area">
+                            <TrendingUp className="w-4 h-4 mr-2" /> Area Chart
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                    {currentResult && (
+                      <OperationBadge operation={currentResult.operation} />
+                    )}
+                  </div>
                 </div>
                 {currentResult && (
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -487,24 +760,22 @@ export default function OLAPDashboard() {
               </CardHeader>
               <CardContent className="p-6">
                 {currentResult ? (
-                  <div className="space-y-6">
-                    {/* Chart */}
-                    <ResultsChart
-                      data={currentResult.data}
-                      dimensions={currentResult.dimensions}
-                    />
-                    
-                    <Separator />
-                    
-                    {/* Table */}
-                    <div>
-                      <h3 className="text-sm font-semibold mb-3">Detailed Data</h3>
-                      <ResultsTable
+                  <Tabs defaultValue="chart" className="space-y-4">
+                    <TabsList>
+                      <TabsTrigger value="chart" data-testid="tab-chart">Chart</TabsTrigger>
+                      <TabsTrigger value="table" data-testid="tab-table">Table</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="chart">
+                      <ResultsCharts
                         data={currentResult.data}
                         dimensions={currentResult.dimensions}
+                        chartType={chartType}
                       />
-                    </div>
-                  </div>
+                    </TabsContent>
+                    <TabsContent value="table">
+                      <ResultsTable data={currentResult.data} />
+                    </TabsContent>
+                  </Tabs>
                 ) : (
                   <div className="text-center py-16">
                     <BarChart3 className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
