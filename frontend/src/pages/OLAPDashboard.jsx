@@ -63,6 +63,12 @@ import {
   SlidersHorizontal,
   Plus,
   X,
+  HelpCircle,
+  Box,
+  ArrowRight,
+  Maximize2,
+  Minimize2,
+  Grid3X3,
 } from "lucide-react";
 import {
   BarChart,
