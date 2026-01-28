@@ -311,6 +311,89 @@ async def sales_by_month(year: Optional[int] = None, region: Optional[str] = Non
     )
 
 
+@api_router.post("/compare")
+async def compare_items(request: CompareRequest):
+    """Compare two items within a dimension."""
+    dimension = request.dimension.lower()
+    item1 = request.item1
+    item2 = request.item2
+    
+    # Map dimension to filter key
+    dim_filter_map = {
+        "region": "region",
+        "product": "product",
+        "category": "category",
+        "quarter": "quarter",
+        "month": "month",
+        "year": "year"
+    }
+    
+    if dimension not in dim_filter_map:
+        raise HTTPException(status_code=400, detail=f"Invalid dimension: {dimension}")
+    
+    filter_key = dim_filter_map[dimension]
+    
+    # Get data for item1
+    result1 = db_manager.execute_olap_query(
+        dimensions=[dimension],
+        measures=["sales_amount", "quantity"],
+        filters={filter_key: item1},
+        operation="aggregate"
+    )
+    
+    # Get data for item2
+    result2 = db_manager.execute_olap_query(
+        dimensions=[dimension],
+        measures=["sales_amount", "quantity"],
+        filters={filter_key: item2},
+        operation="aggregate"
+    )
+    
+    # Calculate comparison metrics
+    data1 = result1.get("data", [{}])[0] if result1.get("data") else {}
+    data2 = result2.get("data", [{}])[0] if result2.get("data") else {}
+    
+    sales1 = float(data1.get("total_sales_amount", 0) or 0)
+    sales2 = float(data2.get("total_sales_amount", 0) or 0)
+    qty1 = int(data1.get("total_quantity", 0) or 0)
+    qty2 = int(data2.get("total_quantity", 0) or 0)
+    count1 = int(data1.get("count", 0) or 0)
+    count2 = int(data2.get("count", 0) or 0)
+    
+    # Calculate differences
+    sales_diff = sales1 - sales2
+    sales_diff_pct = ((sales1 - sales2) / sales2 * 100) if sales2 > 0 else 0
+    
+    return {
+        "dimension": dimension,
+        "comparison": {
+            "item1": {
+                "name": item1,
+                "total_sales": round(sales1, 2),
+                "total_quantity": qty1,
+                "transaction_count": count1,
+                "avg_sale": round(sales1 / count1, 2) if count1 > 0 else 0
+            },
+            "item2": {
+                "name": item2,
+                "total_sales": round(sales2, 2),
+                "total_quantity": qty2,
+                "transaction_count": count2,
+                "avg_sale": round(sales2 / count2, 2) if count2 > 0 else 0
+            },
+            "difference": {
+                "sales_amount": round(sales_diff, 2),
+                "sales_percentage": round(sales_diff_pct, 2),
+                "winner": item1 if sales1 > sales2 else item2
+            }
+        },
+        "chart_data": [
+            {"name": item1, "sales": round(sales1, 2), "quantity": qty1},
+            {"name": item2, "sales": round(sales2, 2), "quantity": qty2}
+        ]
+    }
+
+
 # Agent-specific endpoints
 @api_router.get("/agents/status")
 async def get_agent_status():
