@@ -1216,14 +1216,14 @@ export default function OLAPDashboard() {
                   )}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px] max-h-[80vh]">
+              <DialogContent className="sm:max-w-[600px] max-h-[80vh]">
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2">
                     <History className="w-5 h-5" />
                     Query History
                   </DialogTitle>
                 </DialogHeader>
-                <ScrollArea className="h-[400px] pr-4">
+                <ScrollArea className="h-[450px] pr-4">
                   {queryHistory.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <Clock className="w-10 h-10 mx-auto mb-3 opacity-50" />
@@ -1231,25 +1231,134 @@ export default function OLAPDashboard() {
                       <p className="text-xs mt-1">Your query history will appear here</p>
                     </div>
                   ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {queryHistory.map((item, idx) => (
                         <div
-                          key={idx}
-                          className="border border-border rounded-md p-3 hover:bg-muted/50 transition-colors"
+                          key={item.id || idx}
+                          className="border border-border rounded-md overflow-hidden"
                         >
+                          {/* Header - always visible */}
                           <button
-                            onClick={() => {
-                              setInputValue(item.query);
-                              setHistoryDialogOpen(false);
-                            }}
-                            className="w-full text-left"
+                            onClick={() => toggleHistoryExpanded(item.id)}
+                            className="w-full p-3 text-left hover:bg-muted/50 transition-colors flex items-start justify-between gap-2"
                             data-testid={`history-item-${idx}`}
                           >
-                            <p className="text-sm font-mono">{item.query}</p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {new Date(item.timestamp).toLocaleString()}
-                            </p>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-mono truncate">{item.query}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {new Date(item.timestamp).toLocaleString()}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {item.result && (
+                                <Badge variant="secondary" className="text-xs">
+                                  {item.result.row_count || 0} results
+                                </Badge>
+                              )}
+                              {item.expanded ? (
+                                <Minimize2 className="w-4 h-4 text-muted-foreground" />
+                              ) : (
+                                <Maximize2 className="w-4 h-4 text-muted-foreground" />
+                              )}
+                            </div>
                           </button>
+                          
+                          {/* Expanded content */}
+                          {item.expanded && (
+                            <div className="border-t border-border p-3 bg-muted/30 space-y-3">
+                              {/* Response */}
+                              <div>
+                                <p className="text-xs font-semibold text-muted-foreground mb-1">Response:</p>
+                                <p className="text-sm">{item.response || "No response"}</p>
+                              </div>
+                              
+                              {/* Analysis Result */}
+                              {item.result && (
+                                <>
+                                  <Separator />
+                                  <div>
+                                    <p className="text-xs font-semibold text-muted-foreground mb-2">Analysis Details:</p>
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                      <div className="bg-background rounded p-2">
+                                        <span className="text-muted-foreground">Operation:</span>
+                                        <span className="ml-1 font-mono">{item.result.operation?.replace(/_/g, " ").toUpperCase()}</span>
+                                      </div>
+                                      <div className="bg-background rounded p-2">
+                                        <span className="text-muted-foreground">Results:</span>
+                                        <span className="ml-1 font-semibold">{item.result.row_count || 0} rows</span>
+                                      </div>
+                                    </div>
+                                    {item.result.dimensions && (
+                                      <div className="mt-2 flex flex-wrap gap-1">
+                                        <span className="text-xs text-muted-foreground">Dimensions:</span>
+                                        {item.result.dimensions.map((dim) => (
+                                          <Badge key={dim} variant="secondary" className="text-xs">
+                                            {dim}
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    )}
+                                    {item.result.filters && Object.keys(item.result.filters).length > 0 && (
+                                      <div className="mt-2 flex flex-wrap gap-1">
+                                        <span className="text-xs text-muted-foreground">Filters:</span>
+                                        {Object.entries(item.result.filters).map(([k, v]) => (
+                                          <Badge key={k} variant="outline" className="text-xs">
+                                            {k}: {String(v)}
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    )}
+                                    
+                                    {/* Top results preview */}
+                                    {item.result.data && item.result.data.length > 0 && (
+                                      <div className="mt-3">
+                                        <p className="text-xs text-muted-foreground mb-1">Top Results:</p>
+                                        <div className="bg-background rounded p-2 space-y-1">
+                                          {item.result.data.slice(0, 3).map((row, ridx) => (
+                                            <div key={ridx} className="text-xs font-mono flex justify-between">
+                                              <span>{Object.values(row)[0]}</span>
+                                              <span className="text-primary font-semibold">
+                                                ${(row.total_sales_amount || 0).toLocaleString()}
+                                              </span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </>
+                              )}
+                              
+                              {/* Action buttons */}
+                              <div className="flex gap-2 pt-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    setInputValue(item.query);
+                                    setHistoryDialogOpen(false);
+                                  }}
+                                  className="flex-1"
+                                >
+                                  <RotateCcw className="w-3 h-3 mr-1" />
+                                  Re-run Query
+                                </Button>
+                                {item.result && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      setCurrentResult(item.result);
+                                      setHistoryDialogOpen(false);
+                                      toast.success("Results loaded from history");
+                                    }}
+                                  >
+                                    Load Results
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
