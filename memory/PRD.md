@@ -35,8 +35,10 @@ Requirements:
 - ✅ Dark/Light mode toggle
 - ✅ Available dimensions display
 - ✅ CSV Export functionality
+- ✅ Excel Export functionality (XLSX)
 - ✅ Query bookmarking with localStorage persistence
 - ✅ Chart/Table tab switching
+- ✅ Filter Builder UI with dimension/value selection
 
 ## Architecture
 - **Frontend**: React + Tailwind CSS + Recharts
@@ -60,16 +62,16 @@ Requirements:
 - ✅ Chat interface
 
 ### P1 (Future)
-- Export to Excel format
 - Multi-dimensional pivot tables
-- Advanced filtering UI
+- Dashboard sharing capability
+- Real-time data upload
 
 ### P2 (Nice to Have)
-- Real-time data upload
 - Team collaboration features
 - Dashboard templates
+- Scheduled reports
 
 ## Next Tasks
-1. Add Excel export format
-2. Build advanced filter builder UI
-3. Add dashboard sharing capability
+1. Build multi-dimensional pivot table view
+2. Add dashboard sharing with unique URLs
+3. Implement real-time data upload feature
