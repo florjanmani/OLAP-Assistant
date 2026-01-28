@@ -373,6 +373,50 @@ async def get_operation_explanation(operation: str):
     return cube_operations.get_operation_explanation(operation)
 
 
+@api_router.get("/export/sample-data")
+async def export_sample_data(limit: int = 100):
+    """Export sample sales data as JSON (for CSV conversion on frontend)."""
+    result = db_manager.conn.execute(f"""
+        SELECT 
+            f.transaction_id,
+            t.full_date,
+            t.quarter,
+            t.month_name,
+            t.year,
+            r.region_name as region,
+            p.product_name as product,
+            p.category_name as category,
+            f.sales_amount,
+            f.quantity,
+            f.unit_price,
+            f.profit_margin
+        FROM fact_sales f
+        JOIN dim_time t ON f.time_key = t.time_key
+        JOIN dim_region r ON f.region_key = r.region_key
+        JOIN dim_product p ON f.product_key = p.product_key
+        ORDER BY f.sales_key
+        LIMIT {limit}
+    """).fetchall()
+    
+    columns = ['transaction_id', 'date', 'quarter', 'month', 'year', 
+               'region', 'product', 'category', 'sales_amount', 
+               'quantity', 'unit_price', 'profit_margin']
+    
+    data = []
+    for row in result:
+        record = {}
+        for i, col in enumerate(columns):
+            val = row[i]
+            if hasattr(val, 'isoformat'):
+                val = val.isoformat()
+            elif isinstance(val, float):
+                val = round(val, 2)
+            record[col] = val
+        data.append(record)
+    
+    return {"columns": columns, "data": data, "count": len(data)}
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
