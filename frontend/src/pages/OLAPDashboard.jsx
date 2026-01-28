@@ -388,9 +388,26 @@ const ResultsCharts = ({ data, dimensions, chartType }) => {
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                outerRadius={120}
+                labelLine={true}
+                label={({ name, percent, x, y, midAngle }) => {
+                  const RADIAN = Math.PI / 180;
+                  const radius = 140;
+                  const cx2 = x + radius * Math.cos(-midAngle * RADIAN) * 0.1;
+                  const cy2 = y + radius * Math.sin(-midAngle * RADIAN) * 0.1;
+                  return (
+                    <text
+                      x={cx2}
+                      y={cy2}
+                      fill="hsl(var(--foreground))"
+                      textAnchor={x > 200 ? "start" : "end"}
+                      dominantBaseline="central"
+                      fontSize={12}
+                    >
+                      {`${name} (${(percent * 100).toFixed(0)}%)`}
+                    </text>
+                  );
+                }}
+                outerRadius={100}
                 fill="#8884d8"
                 dataKey="sales"
               >
