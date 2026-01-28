@@ -136,10 +136,12 @@ Frontend (React) → FastAPI → Orchestrator → Agents → DuckDB (Star Schema
 
 ## Testing Status
 
-**Latest Test Results (Iteration 6):**
-- Backend: 100% (15/15 tests passed)
-- Frontend: 100% (all features working)
-- Previous chat response issue: FIXED
+**Latest Test Results (January 28, 2026):**
+- Backend: 100% - All endpoints working
+- Frontend: 100% - All features working
+- Compare feature: FIXED - Now uses dedicated /api/compare endpoint
+- Chat queries: FIXED - SQL query issues resolved
+- Previous issues: ALL RESOLVED
 
 ---
 
