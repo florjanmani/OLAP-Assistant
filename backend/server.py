@@ -129,20 +129,36 @@ async def process_natural_language_query(message: str, session_id: str) -> Dict[
     if not api_key:
         raise HTTPException(status_code=500, detail="LLM API key not configured. Set LLM_API_KEY or ANTHROPIC_API_KEY in .env")
     
-    # Use the LLM chat library
-    from emergentintegrations.llm.chat import LlmChat, UserMessage
-    
-    chat = LlmChat(
-        api_key=api_key,
-        session_id=session_id,
-        system_message=OLAP_SYSTEM_PROMPT
-    ).with_model("anthropic", "claude-sonnet-4-5-20250929")
-    
-    user_message = UserMessage(text=message)
+    # Check if we're using Emergent key or direct Anthropic key
+    if api_key.startswith('sk-emergent'):
+        # Try to use emergentintegrations (only works in Emergent environment)
+        try:
+            from emergentintegrations.llm.chat import LlmChat, UserMessage
+            chat = LlmChat(
+                api_key=api_key,
+                session_id=session_id,
+                system_message=OLAP_SYSTEM_PROMPT
+            ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+            user_message = UserMessage(text=message)
+            response = await chat.send_message(user_message)
+        except ImportError:
+            raise HTTPException(
+                status_code=500, 
+                detail="Emergent key only works in Emergent environment. Please use an Anthropic API key (get one at console.anthropic.com)"
+            )
+    else:
+        # Use direct Anthropic SDK
+        import anthropic
+        client = anthropic.Anthropic(api_key=api_key)
+        response_message = client.messages.create(
+            model="claude-sonnet-4-5-20250929",
+            max_tokens=1024,
+            system=OLAP_SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": message}]
+        )
+        response = response_message.content[0].text
     
     try:
-        response = await chat.send_message(user_message)
-        
         # Parse JSON from response
         json_start = response.find('{')
         json_end = response.rfind('}') + 1
